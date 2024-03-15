@@ -9,9 +9,7 @@ from src.common.utils.singleton import Singleton
 class Config(metaclass=Singleton):
     LOG_LEVEL = config("LOG_LEVEL", default="INFO", cast=str)
     DATABASE_URI = config(
-        "DATABASE_URI",
-        default="../data/Chinook.db",
-        cast=str,
+        "DATABASE_URI", default="./data/Chinook.db", cast=str
     )
     OPENAI_API_KEY = config("OPENAI_API_KEY", cast=str)
 

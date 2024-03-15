@@ -29,23 +29,38 @@ def handle_user_input(user_question):
     st.session_state.messages.append(
         {"role": "user", "content": user_question}
     )
-    response = llm_controller.get_sql(
+    sql_response = llm_controller.get_sql(
+        user_question, st.session_state.vector_store.as_retriever()
+    )
+    chart_response = llm_controller.get_chart(
         user_question, st.session_state.vector_store.as_retriever()
     )
     st.session_state.messages.append(
-        {"role": "assistant", "content": response}
+        {
+            "role": "assistant",
+            "content": {"sql": sql_response, "chart": chart_response},
+        }
     )
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
+
             if message["role"] == "assistant":
-                tab_sql, tab_table = st.tabs(["SQL", "Table"])
+                sql_code = message["content"]["sql"]
+                chart_spec = message["content"]["chart"]
+
+                tab_sql, tab_table, tab_chart = st.tabs(
+                    ["SQL", "Table", "Chart"]
+                )
                 with tab_sql:
-                    st.code(message["content"])
+                    st.code(sql_code, language="sql")
                 with tab_table:
-                    sqlite_uri = "./data/Chinook.db"
-                    conn = sqlite3.connect(sqlite_uri)
-                    df = pd.read_sql_query(message["content"], conn)
+                    conn = sqlite3.connect(config.DATABASE_URI)
+                    df = pd.read_sql_query(sql_code, conn)
                     st.dataframe(df)
+                with tab_chart:
+                    with st.expander("chart spec"):
+                        st.write(chart_spec)
+                    st.vega_lite_chart(data=df, spec=chart_spec)
             else:
                 st.markdown(message["content"])
 

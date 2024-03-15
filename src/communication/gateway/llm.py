@@ -7,3 +7,6 @@ class LLMGateway:
 
     def create_vector_store(self, text_chunks):
         return self._llm_repository.create_vector_store(text_chunks)
+
+    def get_chart(self, user_question: str, retriever) -> str:
+        return self._llm_repository.get_chart(user_question, retriever)

@@ -1,7 +1,7 @@
 from langchain_community.vectorstores import FAISS
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 
-from src.external.llm.chains import get_sql_chain
+from src.external.llm.chains import get_sql_chain, get_vega_chain
 
 
 class OpenAiRepository:
@@ -11,6 +11,10 @@ class OpenAiRepository:
 
     def get_sql(self, user_question: str, retriever) -> str:
         sql_chain = get_sql_chain(self._llm, retriever)
+        return sql_chain.invoke(user_question)
+
+    def get_chart(self, user_question: str, retriever) -> str:
+        sql_chain = get_vega_chain(self._llm, retriever)
         return sql_chain.invoke(user_question)
 
     def create_vector_store(self, text_chunks):
