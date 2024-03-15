@@ -14,8 +14,10 @@ def format_user_message(message_content) -> None:
 
 
 def format_assistant_message(message_content) -> None:
-    sql_code = message_content["sql"]
-    chart_spec = message_content["chart"]
+    sql_code_command = message_content["sql"]
+    chart_spec_command = message_content["chart"]
+
+    sql_code = sql_code_command.execute()
 
     tab_titles = ["SQL", "Table", "Chart"]
     tab_sql, tab_table, tab_chart = st.tabs(tab_titles)
@@ -29,6 +31,7 @@ def format_assistant_message(message_content) -> None:
         st.dataframe(df)
 
     with tab_chart:
+        chart_spec = chart_spec_command.execute()
         with st.expander("chart spec"):
             st.write(chart_spec)
         st.vega_lite_chart(data=df, spec=chart_spec)

@@ -2,6 +2,7 @@ import streamlit as st
 
 from src.communication.controllers.llm import LLMController
 from src.config import get_config
+from src.core.commands.llm import LLMGetChartCommand, LLMGetSQLCommand
 from src.external.llm.helpers.text import TextHelper
 from src.external.llm.repository.open_ai import OpenAiRepository
 from src.external.web.streamlit.ui.messages import render_messages
@@ -36,12 +37,13 @@ def handle_user_input(user_question) -> None:
     st.session_state.messages.append(
         {"role": "user", "content": user_question}
     )
-    sql_response = llm_controller.get_sql(
-        user_question, st.session_state.vector_store.as_retriever()
+    retriever = st.session_state.vector_store.as_retriever()
+
+    sql_response = LLMGetSQLCommand(user_question, retriever, llm_controller)
+    chart_response = LLMGetChartCommand(
+        user_question, retriever, llm_controller
     )
-    chart_response = llm_controller.get_chart(
-        user_question, st.session_state.vector_store.as_retriever()
-    )
+
     st.session_state.messages.append(
         {
             "role": "assistant",
