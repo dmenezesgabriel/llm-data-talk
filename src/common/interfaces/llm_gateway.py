@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Any, Dict
 
 
-class LLMRepositoryInterface(ABC):
+class LLMGatewayInterface(ABC):
 
     @abstractmethod
     def get_sql(self, user_question: str, retriever) -> str:

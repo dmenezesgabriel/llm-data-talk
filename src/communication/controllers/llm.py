@@ -1,13 +1,13 @@
 from typing import Any, Dict
 
-from src.common.interfaces.llm_repository import LLMRepository
+from src.common.interfaces.llm_repository import LLMRepositoryInterface
 from src.communication.gateway.llm import LLMGateway
 from src.core.use_cases.llm import LLMUseCases
 
 
 class LLMController:
 
-    def __init__(self, llm_repository: LLMRepository) -> None:
+    def __init__(self, llm_repository: LLMRepositoryInterface) -> None:
         self.llm_repository = llm_repository
 
     def get_sql(self, user_question: str, retriever: Any) -> str:

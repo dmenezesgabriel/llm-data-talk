@@ -3,11 +3,11 @@ from typing import Any, Dict
 from langchain_community.vectorstores import FAISS
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 
-from src.common.interfaces.llm_repository import LLMRepository
+from src.common.interfaces.llm_repository import LLMRepositoryInterface
 from src.external.llm.chains import get_sql_chain, get_vega_chain
 
 
-class OpenAiRepository(LLMRepository):
+class OpenAiRepository(LLMRepositoryInterface):
     def __init__(self, api_key: str) -> None:
         self._api_key = api_key
         self._llm = ChatOpenAI(api_key=self._api_key)
