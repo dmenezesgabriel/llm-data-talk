@@ -8,14 +8,26 @@
 
 ## Development
 
+- **set python version**:
+
 ```sh
 pyenv global 3.9.6
 ```
+
+- **create virtual environment**:
 
 ```sh
 pyenv exec python -m venv venv
 ```
 
+- **install requirements**:
+
 ```sh
 pip install -r requirements-dev.txt
+```
+
+- **run**:
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 streamlit run main.py
 ```
