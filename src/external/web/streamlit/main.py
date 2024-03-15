@@ -17,12 +17,34 @@ def setup():
     st.write("Waiting for vector store")
     with open("./data/schema.sql") as f:
         schema = f.read()
+
     text_chunks = TextHelper.get_text_chunks(schema)
     st.session_state.vector_store = llm_controller.create_vector_store(
         text_chunks
     )
-
     st.session_state.is_loaded = True
+
+
+def render_messages():
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            if message["role"] == "assistant":
+                sql_code = message["content"]["sql"]
+                chart_spec = message["content"]["chart"]
+                tab_titles = ["SQL", "Table", "Chart"]
+                tab_sql, tab_table, tab_chart = st.tabs(tab_titles)
+                with tab_sql:
+                    st.code(sql_code, language="sql")
+                with tab_table:
+                    conn = sqlite3.connect(config.DATABASE_URI)
+                    df = pd.read_sql_query(sql_code, conn)
+                    st.dataframe(df)
+                with tab_chart:
+                    with st.expander("chart spec"):
+                        st.write(chart_spec)
+                    st.vega_lite_chart(data=df, spec=chart_spec)
+            else:
+                st.markdown(message["content"])
 
 
 def handle_user_input(user_question):
@@ -41,28 +63,6 @@ def handle_user_input(user_question):
             "content": {"sql": sql_response, "chart": chart_response},
         }
     )
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-
-            if message["role"] == "assistant":
-                sql_code = message["content"]["sql"]
-                chart_spec = message["content"]["chart"]
-
-                tab_sql, tab_table, tab_chart = st.tabs(
-                    ["SQL", "Table", "Chart"]
-                )
-                with tab_sql:
-                    st.code(sql_code, language="sql")
-                with tab_table:
-                    conn = sqlite3.connect(config.DATABASE_URI)
-                    df = pd.read_sql_query(sql_code, conn)
-                    st.dataframe(df)
-                with tab_chart:
-                    with st.expander("chart spec"):
-                        st.write(chart_spec)
-                    st.vega_lite_chart(data=df, spec=chart_spec)
-            else:
-                st.markdown(message["content"])
 
 
 def main() -> None:
@@ -82,3 +82,6 @@ def main() -> None:
 
     if user_question := st.chat_input("You: "):
         handle_user_input(user_question)
+
+    if st.session_state.messages:
+        render_messages()
