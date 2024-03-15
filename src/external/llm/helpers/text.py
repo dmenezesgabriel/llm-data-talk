@@ -3,7 +3,7 @@ from langchain.text_splitter import CharacterTextSplitter
 
 class TextHelper:
 
-    @classmethod
+    @staticmethod
     def get_text_chunks(raw_text):
         text_splitter = CharacterTextSplitter(
             separator="\n",
