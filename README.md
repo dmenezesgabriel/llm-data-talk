@@ -31,3 +31,7 @@ pip install -r requirements-dev.txt
 ```sh
 PYTHONDONTWRITEBYTECODE=1 streamlit run main.py
 ```
+
+## Architecture
+
+![clean-architecture](docs/assets/clean_architecture.jpg)
