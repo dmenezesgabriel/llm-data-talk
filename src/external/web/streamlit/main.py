@@ -1,13 +1,10 @@
-import sqlite3
-from typing import Callable
-
-import pandas as pd
 import streamlit as st
 
 from src.communication.controllers.llm import LLMController
 from src.config import get_config
 from src.external.llm.helpers.text import TextHelper
 from src.external.llm.repository.open_ai import OpenAiRepository
+from src.external.web.streamlit.ui.messages import render_messages
 
 config = get_config()
 
@@ -15,8 +12,16 @@ open_ai_repository = OpenAiRepository(api_key=config.OPENAI_API_KEY)
 llm_controller = LLMController(open_ai_repository)
 
 
-def setup():
-    st.write("Waiting for vector store")
+def setup_session_state() -> None:
+    if "is_loaded" not in st.session_state:
+        st.session_state.is_loaded = None
+    if "vector_store" not in st.session_state:
+        st.session_state.vector_store = None
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+
+
+def setup_vector_store() -> None:
     with open("./data/schema.sql") as f:
         schema = f.read()
 
@@ -25,43 +30,6 @@ def setup():
         text_chunks
     )
     st.session_state.is_loaded = True
-
-
-def format_user_message(message_content) -> None:
-    st.markdown(message_content)
-
-
-def format_assistant_message(message_content) -> None:
-    sql_code = message_content["sql"]
-    chart_spec = message_content["chart"]
-    tab_titles = ["SQL", "Table", "Chart"]
-    tab_sql, tab_table, tab_chart = st.tabs(tab_titles)
-    with tab_sql:
-        st.code(sql_code, language="sql")
-    with tab_table:
-        conn = sqlite3.connect(config.DATABASE_URI)
-        df = pd.read_sql_query(sql_code, conn)
-        st.dataframe(df)
-    with tab_chart:
-        with st.expander("chart spec"):
-            st.write(chart_spec)
-        st.vega_lite_chart(data=df, spec=chart_spec)
-
-
-def message_formatter_factory(role: str) -> Callable:
-    messages = {
-        "user": format_user_message,
-        "assistant": format_assistant_message,
-    }
-    return messages[role]
-
-
-def render_messages() -> None:
-    for message in st.session_state.messages:
-        role = message["role"]
-        content = message["content"]
-        with st.chat_message(role):
-            message_formatter_factory(role)(content)
 
 
 def handle_user_input(user_question) -> None:
@@ -86,16 +54,12 @@ def main() -> None:
     st.set_page_config("Chat with your data", page_icon=":chart")
     st.header("Chat with your data")
 
-    if "is_loaded" not in st.session_state:
-        st.session_state.is_loaded = None
-    if "vector_store" not in st.session_state:
-        st.session_state.vector_store = None
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
+    setup_session_state()
 
     if not st.session_state.is_loaded:
         with st.status("loading..."):
-            setup()
+            st.write("Waiting for vector store")
+            setup_vector_store()
 
     if user_question := st.chat_input("You: "):
         handle_user_input(user_question)
