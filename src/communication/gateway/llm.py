@@ -7,6 +7,3 @@ class LLMGateway:
 
     def create_vector_store(self, text_chunks):
         return self._llm_repository.create_vector_store(text_chunks)
-
-    def create_conversational_chain(self, vector_store):
-        return self._llm_repository.create_conversational_chain(vector_store)

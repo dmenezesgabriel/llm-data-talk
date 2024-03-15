@@ -13,9 +13,3 @@ class LLMController:
     def create_vector_store(self, text_chunks: list[str]):
         llm_gateway = LLMGateway(self.llm_repository)
         return LLMUseCases.create_vector_store(text_chunks, llm_gateway)
-
-    def create_conversational_chain(self, vector_store):
-        llm_gateway = LLMGateway(self.llm_repository)
-        return LLMUseCases.create_conversational_chain(
-            vector_store, llm_gateway
-        )
