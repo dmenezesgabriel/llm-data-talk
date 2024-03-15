@@ -1,10 +1,12 @@
+from typing import List
+
 from langchain.text_splitter import CharacterTextSplitter
 
 
 class TextHelper:
 
     @staticmethod
-    def get_text_chunks(raw_text):
+    def get_text_chunks(raw_text) -> List[str]:
         text_splitter = CharacterTextSplitter(
             separator="\n",
             chunk_size=1000,

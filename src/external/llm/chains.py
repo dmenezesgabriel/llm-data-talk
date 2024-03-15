@@ -1,11 +1,15 @@
+from typing import Any
+
+from langchain.chains.llm import LLMChain
 from langchain_core.output_parsers import JsonOutputParser, StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.retrievers import BaseRetriever
 from langchain_core.runnables import RunnablePassthrough
 
 from src.external.llm.templates import sql_template, vega_spec_template
 
 
-def get_sql_chain(llm, retriever):
+def get_sql_chain(llm: Any, retriever: BaseRetriever) -> LLMChain:
     prompt = ChatPromptTemplate.from_template(sql_template)
 
     return (
@@ -16,7 +20,7 @@ def get_sql_chain(llm, retriever):
     )
 
 
-def get_vega_chain(llm, retriever):
+def get_vega_chain(llm: Any, retriever: BaseRetriever) -> LLMChain:
     prompt = ChatPromptTemplate.from_template(template=vega_spec_template)
 
     context_sql_chain = get_sql_chain(llm, retriever)
