@@ -62,3 +62,5 @@ COPY ./data /app/data
 RUN chown -R app:app /app/
 
 USER app
+
+HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health

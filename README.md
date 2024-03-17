@@ -34,10 +34,11 @@ PYTHONDONTWRITEBYTECODE=1 streamlit run main.py
 
 ## Architecture
 
-![clean-architecture](docs/assets/clean_archtecture.jpg)
+![clean-architecture](docs/assets/clean_architecture.jpg)
 
 ## Resources
 
 - [chat2plot](https://github.com/nyanp/chat2plot)
 - [Enforce output with pydantic](https://xebia.com/blog/enforce-and-validate-llm-output-with-pydantic/)
 - [Validating language models output](https://medium.com/@azizbenothman76/pydantic-and-prompt-engineering-the-essentials-for-validating-language-model-outputs-e48553eb4a3b)
+- [streamlit + cognito + terraform](https://medium.com/@EKohlmeyer/deploying-a-streamlit-web-app-on-aws-with-authentication-using-aws-cognito-a-comprehensive-guide-1da9e7ae4726)
