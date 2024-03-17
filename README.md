@@ -42,3 +42,7 @@ PYTHONDONTWRITEBYTECODE=1 streamlit run main.py
 - [Enforce output with pydantic](https://xebia.com/blog/enforce-and-validate-llm-output-with-pydantic/)
 - [Validating language models output](https://medium.com/@azizbenothman76/pydantic-and-prompt-engineering-the-essentials-for-validating-language-model-outputs-e48553eb4a3b)
 - [streamlit + cognito + terraform](https://medium.com/@EKohlmeyer/deploying-a-streamlit-web-app-on-aws-with-authentication-using-aws-cognito-a-comprehensive-guide-1da9e7ae4726)
+- [Q&A RAG Bot](https://medium.com/@muhammad2000ammar/building-a-q-a-chatbot-on-private-data-ba1af4a9a4dc)
+- [Streamlit + nginx](https://discuss.streamlit.io/t/deploy-streamlit-with-nginx-docker/52907/2)
+- [Streamlit + nginx](https://discuss.streamlit.io/t/deploy-streamlit-app-using-nginx/15493)
+- [Lang Chain Router](https://python.langchain.com/docs/expression_language/cookbook/embedding_router)
