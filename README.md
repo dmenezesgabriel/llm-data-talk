@@ -34,7 +34,7 @@ PYTHONDONTWRITEBYTECODE=1 streamlit run main.py
 
 ## Architecture
 
-![clean-architecture](docs/assets/clean_architecture.jpg)
+![clean-architecture](docs/assets/clean_archtecture.jpg)
 
 ## Resources
 
