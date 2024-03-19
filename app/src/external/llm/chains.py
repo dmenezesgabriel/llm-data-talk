@@ -1,12 +1,12 @@
 from typing import Any
 
 from langchain.chains.llm import LLMChain
-from langchain.output_parsers.openai_functions import JsonOutputFunctionsParser
-from langchain_core.output_parsers import StrOutputParser
+
+# from langchain.output_parsers.openai_functions import JsonOutputFunctionsParser
+from langchain_core.output_parsers import JsonOutputParser, StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.retrievers import BaseRetriever
 from langchain_core.runnables import RunnablePassthrough
-
 from src.external.llm.templates import sql_template, vega_spec_template
 
 functions = [
@@ -53,9 +53,9 @@ def get_vega_chain(llm: Any, retriever: BaseRetriever) -> LLMChain:
         | prompt
         | llm.bind(
             stop=["\nVega-Lite Spec:"],
-            function_call={"name": "vega_spec"},
-            functions=functions,
+            # function_call={"name": "vega_spec"},
+            # functions=functions,
         )
-        | JsonOutputFunctionsParser()
-        # | JsonOutputParser()
+        # | JsonOutputFunctionsParser()
+        | JsonOutputParser()
     )

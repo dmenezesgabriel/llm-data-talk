@@ -2,7 +2,6 @@ from typing import Callable
 
 import pandas as pd
 import streamlit as st
-
 from src.config import get_config
 from src.external.web.streamlit.utils import get_database_connection
 
