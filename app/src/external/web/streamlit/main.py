@@ -1,5 +1,7 @@
-import streamlit as st
+import logging
 
+import streamlit as st
+from src.common.utils.performance import log_time
 from src.communication.controllers.llm import LLMController
 from src.config import get_config
 from src.core.commands.llm import LLMGetChartCommand, LLMGetSQLCommand
@@ -12,6 +14,8 @@ config = get_config()
 open_ai_repository = OpenAiRepository(api_key=config.OPENAI_API_KEY)
 llm_controller = LLMController(open_ai_repository)
 
+logger = logging.getLogger(__name__)
+
 
 def setup_session_state() -> None:
     if "is_loaded" not in st.session_state:
@@ -22,6 +26,7 @@ def setup_session_state() -> None:
         st.session_state.messages = []
 
 
+@log_time
 def setup_vector_store() -> None:
     with open("./data/schema.sql") as f:
         schema = f.read()
@@ -59,6 +64,7 @@ def main() -> None:
     setup_session_state()
 
     if not st.session_state.is_loaded:
+        logger.info("setup vector store")
         with st.status("loading..."):
             st.write("Waiting for vector store")
             setup_vector_store()

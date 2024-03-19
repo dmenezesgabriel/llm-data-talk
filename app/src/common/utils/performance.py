@@ -11,7 +11,6 @@ logger = logging.getLogger(__name__)
 
 
 def log_time(func: Callable) -> None:
-
     @wraps(func)
     def wrapper(*args, **kwargs):
         start = time.time()
@@ -19,7 +18,7 @@ def log_time(func: Callable) -> None:
         end = time.time()
         message = f"Function {func.__module__}.{func.__name__} "
         message += f"took {end - start} seconds to execute"
-        logger.debug(message)
+        print(message)
         return result
 
     return wrapper
