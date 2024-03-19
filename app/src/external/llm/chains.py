@@ -7,6 +7,7 @@ from langchain_core.output_parsers import JsonOutputParser, StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.retrievers import BaseRetriever
 from langchain_core.runnables import RunnablePassthrough
+from src.common.utils.performance import log_time
 from src.external.llm.templates import sql_template, vega_spec_template
 
 functions = [
@@ -28,6 +29,7 @@ functions = [
 ]
 
 
+@log_time
 def get_sql_chain(llm: Any, retriever: BaseRetriever) -> LLMChain:
     prompt = ChatPromptTemplate.from_template(sql_template)
 
@@ -39,6 +41,7 @@ def get_sql_chain(llm: Any, retriever: BaseRetriever) -> LLMChain:
     )
 
 
+@log_time
 def get_vega_chain(llm: Any, retriever: BaseRetriever) -> LLMChain:
     prompt = ChatPromptTemplate.from_template(template=vega_spec_template)
 

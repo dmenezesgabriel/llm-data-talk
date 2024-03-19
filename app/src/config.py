@@ -2,7 +2,6 @@ import logging.config
 import os
 
 from decouple import config  # type: ignore
-
 from src.common.utils.singleton import Singleton
 
 
