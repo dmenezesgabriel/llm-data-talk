@@ -44,9 +44,17 @@ def handle_user_input(user_question) -> None:
     )
     retriever = st.session_state.vector_store.as_retriever()
 
-    sql_response = LLMGetSQLCommand(user_question, retriever, llm_controller)
+    sql_response = LLMGetSQLCommand(
+        user_question=user_question,
+        conversation_history=st.session_state.messages,
+        retriever=retriever,
+        llm_controller=llm_controller,
+    )
     chart_response = LLMGetChartCommand(
-        user_question, retriever, llm_controller
+        user_question=user_question,
+        conversation_history=st.session_state.messages,
+        retriever=retriever,
+        llm_controller=llm_controller,
     )
 
     st.session_state.messages.append(

@@ -2,7 +2,6 @@ from typing import Any, Dict
 
 from langchain_community.vectorstores import FAISS
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
-
 from src.common.interfaces.llm_repository import LLMRepositoryInterface
 from src.external.llm.chains import get_sql_chain, get_vega_chain
 
@@ -12,13 +11,27 @@ class OpenAiRepository(LLMRepositoryInterface):
         self._api_key = api_key
         self._llm = ChatOpenAI(api_key=self._api_key)
 
-    def get_sql(self, user_question: str, retriever) -> str:
+    def get_sql(
+        self, user_question: str, conversation_history: list, retriever: Any
+    ) -> str:
         sql_chain = get_sql_chain(self._llm, retriever)
-        return sql_chain.invoke(user_question)
+        return sql_chain.invoke(
+            {
+                "question": user_question,
+                "conversation_history": conversation_history,
+            }
+        )
 
-    def get_chart(self, user_question: str, retriever) -> Dict[str, Any]:
+    def get_chart(
+        self, user_question: str, conversation_history: list, retriever: Any
+    ) -> Dict[str, Any]:
         sql_chain = get_vega_chain(self._llm, retriever)
-        return sql_chain.invoke(user_question)
+        return sql_chain.invoke(
+            {
+                "question": user_question,
+                "conversation_history": conversation_history,
+            }
+        )
 
     def create_vector_store(self, text_chunks):
         embeddings = OpenAIEmbeddings(openai_api_key=self._api_key)

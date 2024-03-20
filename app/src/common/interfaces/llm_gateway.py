@@ -5,11 +5,15 @@ from typing import Any, Dict
 class LLMGatewayInterface(ABC):
 
     @abstractmethod
-    def get_sql(self, user_question: str, retriever) -> str:
+    def get_sql(
+        self, user_question: str, conversation_history: list, retriever
+    ) -> str:
         raise NotImplementedError()
 
     @abstractmethod
-    def get_chart(self, user_question: str, retriever) -> Dict[str, Any]:
+    def get_chart(
+        self, user_question: str, conversation_history: list, retriever
+    ) -> Dict[str, Any]:
         raise NotImplementedError()
 
     @abstractmethod
