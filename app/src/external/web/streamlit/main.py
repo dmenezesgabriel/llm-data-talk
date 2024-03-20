@@ -14,7 +14,7 @@ config = get_config()
 open_ai_repository = OpenAiRepository(api_key=config.OPENAI_API_KEY)
 llm_controller = LLMController(open_ai_repository)
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger()
 
 
 def setup_session_state() -> None:

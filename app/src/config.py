@@ -12,6 +12,9 @@ class Config(metaclass=Singleton):
     )
     OPENAI_API_KEY = config("OPENAI_API_KEY", cast=str)
 
+    def __init__(self) -> None:
+        os.environ["FAISS_OPT_LEVEL"] = "Generic"
+
 
 class DevelopmentConfig(Config):
     LOG_LEVEL = config("LOG_LEVEL", default="DEBUG", cast=str)
@@ -31,7 +34,8 @@ def config_factory(environment: str) -> type[Config]:
         "staging": StagingConfig,
         "production": ProductionConfig,
     }
-    return configs[environment]
+    config_class = configs[environment]
+    return config_class()
 
 
 def get_config() -> type[Config]:
