@@ -36,6 +36,13 @@ pip install -r requirements-dev.txt
 PYTHONDONTWRITEBYTECODE=1 streamlit run main.py
 ```
 
+- **execute modules separately**:
+
+```sh
+cd app
+PYTHONDONTWRITEBYTECODE=1 python -m src.external.llm.repository.open_ai
+```
+
 ## Architecture
 
 ![clean-architecture](docs/assets/clean_architecture.jpg)

@@ -1,8 +1,6 @@
 from typing import Any
 
 from langchain.chains.llm import LLMChain
-
-# from langchain.output_parsers.openai_functions import JsonOutputFunctionsParser
 from langchain_core.output_parsers import JsonOutputParser, StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.retrievers import BaseRetriever
@@ -38,9 +36,6 @@ def get_vega_chain(llm: Any, retriever: BaseRetriever) -> LLMChain:
         | prompt
         | llm.bind(
             stop=["\nVega-Lite Spec:"],
-            # function_call={"name": "vega_spec"},
-            # functions=functions,
         )
-        # | JsonOutputFunctionsParser()
         | JsonOutputParser()
     )
