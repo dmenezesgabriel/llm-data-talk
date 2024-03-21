@@ -10,24 +10,6 @@ from langchain_core.runnables import RunnablePassthrough
 from src.common.utils.performance import log_time
 from src.external.llm.templates import sql_template, vega_spec_template
 
-functions = [
-    {
-        "name": "vega_spec",
-        "description": "Vega lite json chart spec",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "mark": {"type": "object", "description": "vega lite mark"},
-                "encoding": {
-                    "type": "object",
-                    "description": "vega lite encoding",
-                },
-            },
-            "required": ["mark", "encoding"],
-        },
-    }
-]
-
 
 @log_time
 def get_sql_chain(llm: Any, retriever: BaseRetriever) -> LLMChain:
