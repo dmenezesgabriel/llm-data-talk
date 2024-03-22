@@ -1,3 +1,4 @@
+from operator import itemgetter
 from typing import Any
 
 from langchain.chains.llm import LLMChain
@@ -14,7 +15,10 @@ def get_sql_chain(llm: Any, retriever: BaseRetriever) -> LLMChain:
     prompt = ChatPromptTemplate.from_template(sql_template)
 
     return (
-        {"context": retriever, "question": RunnablePassthrough()}
+        {
+            "context": itemgetter("question") | retriever,
+            "question": itemgetter("question"),
+        }
         | prompt
         | llm.bind(stop=["\nSQLResult:"])
         | StrOutputParser()
@@ -30,8 +34,8 @@ def get_vega_chain(llm: Any, retriever: BaseRetriever) -> LLMChain:
     return (
         {
             "query": lambda x: context_sql_chain,
-            "context": retriever,
-            "question": RunnablePassthrough(),
+            "context": itemgetter("question") | retriever,
+            "question": itemgetter("question"),
         }
         | prompt
         | llm.bind(

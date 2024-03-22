@@ -28,7 +28,7 @@ class ProductionConfig(Config):
     pass
 
 
-def config_factory(environment: str) -> type[Config]:
+def config_factory(environment: str) -> Config:
     configs = {
         "development": DevelopmentConfig,
         "staging": StagingConfig,

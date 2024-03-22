@@ -37,14 +37,18 @@ def setup_vector_store() -> None:
     st.session_state.is_loaded = True
 
 
-def handle_user_input(user_question) -> None:
+def handle_user_input(user_question: str) -> None:
     st.session_state.messages.append(
         {"role": "user", "content": user_question}
     )
     retriever = st.session_state.vector_store.as_retriever()
 
-    sql_response = llm_controller.get_sql(user_question, retriever)
-    chart_response = llm_controller.get_chart(user_question, retriever)
+    sql_response = llm_controller.get_sql(
+        {"question": user_question}, retriever
+    )
+    chart_response = llm_controller.get_chart(
+        {"question": user_question}, retriever
+    )
 
     st.session_state.messages.append(
         {
