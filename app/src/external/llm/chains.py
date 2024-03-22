@@ -1,27 +1,18 @@
 from operator import itemgetter
-from typing import Any, Union
+from typing import Any
 
 from langchain.chains.llm import LLMChain
-from langchain_core.output_parsers import (
-    JsonOutputParser,
-    PydanticOutputParser,
-    StrOutputParser,
-)
+from langchain.schema.runnable import RunnableLambda
+from langchain_core.output_parsers import JsonOutputParser, StrOutputParser
 from langchain_core.prompts import PromptTemplate
-from langchain_core.pydantic_v1 import BaseModel, Field, validator
 from langchain_core.retrievers import BaseRetriever
+from src.common.utils.dataframe import query_to_pandas_schema
 from src.common.utils.performance import log_time
 from src.external.llm.templates import (
     chart_spec,
     entity_extraction,
     sql_template,
 )
-
-
-class ChartSpec(BaseModel):
-    chart_type: Union[str, None] = Field(description="Chart type")
-    x_axis: Union[str, None] = Field(description="X axis field name")
-    y_axis: Union[str, None] = Field(description="Y axis field name")
 
 
 @log_time
@@ -65,24 +56,24 @@ def get_entity_extraction_chain(
 
 
 @log_time
-def get_chart_chain(llm: Any, retriever: BaseRetriever) -> LLMChain:
-    parser = PydanticOutputParser(pydantic_object=ChartSpec)
+def get_chart_chain(llm: Any, retriever: BaseRetriever, conn: Any) -> LLMChain:
 
     prompt = PromptTemplate(
         template=chart_spec,
         input_variables=["query", "question"],
-        partial_variables={
-            "format_instructions": parser.get_format_instructions()
-        },
     )
     context_sql_chain = get_sql_chain(llm, retriever)
 
+    def _query_to_pandas_schema(sql: str) -> str:
+        return query_to_pandas_schema(sql, conn)
+
     return (
         {
-            "query": lambda x: context_sql_chain,
+            "schema": lambda x: context_sql_chain
+            | RunnableLambda(func=_query_to_pandas_schema),
             "question": itemgetter("question"),
         }
         | prompt
         | llm
-        | parser
+        | JsonOutputParser()
     )

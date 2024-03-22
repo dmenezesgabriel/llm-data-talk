@@ -19,8 +19,10 @@ class OpenAiRepository(LLMRepositoryInterface):
         sql_chain = get_sql_chain(self._llm, retriever)
         return sql_chain.invoke(input=_input)
 
-    def get_chart(self, _input: Dict[str, Any], retriever) -> Dict[str, Any]:
-        sql_chain = get_chart_chain(self._llm, retriever)
+    def get_chart(
+        self, _input: Dict[str, Any], retriever, conn
+    ) -> Dict[str, Any]:
+        sql_chain = get_chart_chain(self._llm, retriever, conn)
         return sql_chain.invoke(input=_input)
 
     def get_entities(
@@ -37,7 +39,9 @@ class OpenAiRepository(LLMRepositoryInterface):
 if __name__ == "__main__":
     from src.config import get_config
     from src.external.llm.helpers.text import TextHelper
+    from src.external.web.streamlit.utils import get_database_connection
 
+    conn = get_database_connection()
     with open("./data/schema.sql") as f:
         schema = f.read()
 
@@ -46,25 +50,26 @@ if __name__ == "__main__":
     text_chunks = TextHelper.get_text_chunks(schema)
     vector_store = repository.create_vector_store(text_chunks=text_chunks)
 
-    sql_result = repository.get_sql(
-        _input={"question": "what are the total iron maiden artist sales?"},
-        retriever=vector_store.as_retriever(),
-    )
-    print(50 * "=")
-    print(sql_result)
-    print(50 * "=")
+    # sql_result = repository.get_sql(
+    #     _input={"question": "what are the total iron maiden artist sales?"},
+    #     retriever=vector_store.as_retriever(),
+    # )
+    # print(50 * "=")
+    # print(sql_result)
+    # print(50 * "=")
 
-    entities = repository.get_entities(
-        _input={"question": "what are the total iron maiden artist sales?"},
-        retriever=vector_store.as_retriever(),
-    )
-    print(50 * "=")
-    print(entities)
-    print(50 * "=")
+    # entities = repository.get_entities(
+    #     _input={"question": "what are the total iron maiden artist sales?"},
+    #     retriever=vector_store.as_retriever(),
+    # )
+    # print(50 * "=")
+    # print(entities)
+    # print(50 * "=")
 
     chart_spec = repository.get_chart(
         _input={"question": "what are the total iron maiden artist sales?"},
         retriever=vector_store.as_retriever(),
+        conn=conn,
     )
 
     print(50 * "=")

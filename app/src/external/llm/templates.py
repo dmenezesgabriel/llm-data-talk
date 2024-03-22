@@ -48,20 +48,18 @@ entity_extraction = dedent(
 
 chart_spec = dedent(
     """
-    You need to return a chart specification for the user's question and\n
-    sql snippet.\n
-    Chart specification should always have valid json format, if you don't\n
-    find any chart specification then respond with empty dict.\n
-
-    \n{format_instructions}\n
+    Your task is to generate chart configuration for the given dataset and user
+    question.\n
+    Responses should be in JSON format compliant with the vega-lite
+    specification, but `data` field must be excluded.\n
 
     <question>
     {question}
     </question>
 
-    <sql-query>
-    {query}
-    </sql-query>
+    <dataset>
+    {schema}
+    </dataset>
 
     Json:
     """
