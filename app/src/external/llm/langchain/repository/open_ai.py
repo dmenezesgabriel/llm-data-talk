@@ -3,7 +3,7 @@ from typing import Any, Dict
 from langchain_community.vectorstores import FAISS
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from src.common.interfaces.llm_repository import LLMRepositoryInterface
-from src.external.llm.chains import (
+from src.external.llm.langchain.chains import (
     get_chart_chain,
     get_entity_extraction_chain,
     get_sql_chain,
@@ -37,9 +37,9 @@ class OpenAiRepository(LLMRepositoryInterface):
 
 
 if __name__ == "__main__":
+    from src.common.utils.database import get_database_connection
     from src.config import get_config
-    from src.external.llm.helpers.text import TextHelper
-    from src.external.web.streamlit.utils import get_database_connection
+    from src.external.llm.langchain.helpers.text import TextHelper
 
     conn = get_database_connection()
     with open("./data/schema.sql") as f:

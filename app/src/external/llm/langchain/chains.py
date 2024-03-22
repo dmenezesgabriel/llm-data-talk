@@ -8,7 +8,7 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.retrievers import BaseRetriever
 from src.common.utils.dataframe import query_to_pandas_schema
 from src.common.utils.performance import log_time
-from src.external.llm.templates import (
+from src.external.llm.langchain.templates import (
     chart_spec,
     entity_extraction,
     sql_template,

@@ -4,8 +4,8 @@ import streamlit as st
 from src.common.utils.performance import log_time
 from src.communication.controllers.llm import LLMController
 from src.config import get_config
-from src.external.llm.helpers.text import TextHelper
-from src.external.llm.repository.open_ai import OpenAiRepository
+from src.external.llm.langchain.helpers.text import TextHelper
+from src.external.llm.langchain.repository.open_ai import OpenAiRepository
 from src.external.web.streamlit.ui.messages import render_messages
 
 config = get_config()

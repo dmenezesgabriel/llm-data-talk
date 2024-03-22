@@ -2,8 +2,8 @@ from typing import Callable
 
 import pandas as pd
 import streamlit as st
+from src.common.utils.database import get_database_connection
 from src.config import get_config
-from src.external.web.streamlit.utils import get_database_connection
 
 config = get_config()
 
