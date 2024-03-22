@@ -1,4 +1,4 @@
-from typing import Any, Dict, cast
+from typing import Any, Dict
 
 from langchain_community.vectorstores import FAISS
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
