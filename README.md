@@ -58,3 +58,4 @@ PYTHONDONTWRITEBYTECODE=1 python -m src.external.llm.repository.open_ai
 - [Streamlit + nginx](https://discuss.streamlit.io/t/deploy-streamlit-with-nginx-docker/52907/2)
 - [Streamlit + nginx](https://discuss.streamlit.io/t/deploy-streamlit-app-using-nginx/15493)
 - [Lang Chain Router](https://python.langchain.com/docs/expression_language/cookbook/embedding_router)
+- [named-entity-recognition](https://medium.com/@grisanti.isidoro/named-entity-recognition-with-llms-extract-conversation-metadata-94d5536178f2)

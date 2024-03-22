@@ -8,3 +8,4 @@
 - feat: add agents and tools (langchain)
 - feat: add a prediction tool (ex: using prophet)
 - feat: consider chat history
+- feat: Named Entity Recognition (NER)

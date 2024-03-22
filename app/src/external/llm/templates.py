@@ -52,11 +52,7 @@ chart_spec = dedent(
     Chart specification should always have valid json format, if you don't\n
     find any chart specification then respond with empty dict.\n
 
-    {{
-        "chart_type": "bar",
-        "x": "{{DQL query column name for x axis}}",
-        "y": "{{DQL query column name for y axis}}"
-    }}
+    \n{format_instructions}\n
 
     <question>
     {question}
