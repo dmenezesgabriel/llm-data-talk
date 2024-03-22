@@ -20,8 +20,8 @@ from src.external.llm.templates import (
 
 class ChartSpec(BaseModel):
     chart_type: Union[str, None] = Field(description="Chart type")
-    x_axis: Union[str, None] = Field(description="X axis")
-    y_axis: Union[str, None] = Field(description="Y axis")
+    x_axis: Union[str, None] = Field(description="X axis field name")
+    y_axis: Union[str, None] = Field(description="Y axis field name")
 
 
 @log_time

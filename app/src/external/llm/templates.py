@@ -21,7 +21,8 @@ sql_template = dedent(
 
 entity_extraction = dedent(
     """
-    You need to extract entities from the user query in specified format.\n
+    You need to extract entities from the user query `WHERE` and `HAVING`
+    clauses in specified format.\n
     Extracted entities always should have valid json format, if you don't\n
     find any entities then respond with empty list.
 
@@ -48,7 +49,7 @@ entity_extraction = dedent(
 chart_spec = dedent(
     """
     You need to return a chart specification for the user's question and\n
-    DQL sql snippet.\n
+    sql snippet.\n
     Chart specification should always have valid json format, if you don't\n
     find any chart specification then respond with empty dict.\n
 
