@@ -3,7 +3,7 @@ from typing import Any, Dict, cast
 from langchain_community.vectorstores import FAISS
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from src.common.interfaces.llm_repository import LLMRepositoryInterface
-from src.external.llm.chains import get_sql_chain, get_vega_chain
+from src.external.llm.chains import get_chart_chain, get_sql_chain
 
 
 class OpenAiRepository(LLMRepositoryInterface):
@@ -16,7 +16,7 @@ class OpenAiRepository(LLMRepositoryInterface):
         return sql_chain.invoke(input=_input)
 
     def get_chart(self, _input: Dict[str, Any], retriever) -> Dict[str, Any]:
-        sql_chain = get_vega_chain(self._llm, retriever)
+        sql_chain = get_chart_chain(self._llm, retriever)
         return sql_chain.invoke(input=_input)
 
     def create_vector_store(self, text_chunks):
@@ -36,8 +36,8 @@ if __name__ == "__main__":
     text_chunks = TextHelper.get_text_chunks(schema)
     vector_store = repository.create_vector_store(text_chunks=text_chunks)
 
-    sql_result = repository.get_sql(
-        _input={"question": "How many álbuns there is?"},
+    sql_result = repository.get_chart(
+        _input={"question": "What are the top 10 artists by sales"},
         retriever=vector_store.as_retriever(),
     )
     print(sql_result)

@@ -28,9 +28,7 @@ def format_assistant_message(message_content) -> None:
         st.dataframe(df)
 
     with tab_chart:
-        with st.expander("chart spec"):
-            st.write(chart_spec)
-        st.vega_lite_chart(data=df, spec=chart_spec)
+        st.write(chart_spec)
 
     with tab_text:
         st.write("Not Implemented")

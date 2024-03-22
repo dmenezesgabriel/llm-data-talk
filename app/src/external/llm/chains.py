@@ -5,9 +5,8 @@ from langchain.chains.llm import LLMChain
 from langchain_core.output_parsers import JsonOutputParser, StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.retrievers import BaseRetriever
-from langchain_core.runnables import RunnablePassthrough
 from src.common.utils.performance import log_time
-from src.external.llm.templates import sql_template, vega_spec_template
+from src.external.llm.templates import chart_spec, sql_template
 
 
 @log_time
@@ -20,14 +19,14 @@ def get_sql_chain(llm: Any, retriever: BaseRetriever) -> LLMChain:
             "question": itemgetter("question"),
         }
         | prompt
-        | llm.bind(stop=["\nSQLResult:"])
+        | llm
         | StrOutputParser()
     )
 
 
 @log_time
-def get_vega_chain(llm: Any, retriever: BaseRetriever) -> LLMChain:
-    prompt = ChatPromptTemplate.from_template(template=vega_spec_template)
+def get_chart_chain(llm: Any, retriever: BaseRetriever) -> LLMChain:
+    prompt = ChatPromptTemplate.from_template(template=chart_spec)
 
     context_sql_chain = get_sql_chain(llm, retriever)
 
@@ -38,8 +37,6 @@ def get_vega_chain(llm: Any, retriever: BaseRetriever) -> LLMChain:
             "question": itemgetter("question"),
         }
         | prompt
-        | llm.bind(
-            stop=["\nVega-Lite Spec:"],
-        )
+        | llm
         | JsonOutputParser()
     )

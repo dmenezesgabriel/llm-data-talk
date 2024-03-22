@@ -1,33 +1,45 @@
-sql_template = """Write a SQL query that would answer the user's question,
-based on the context:
+from textwrap import dedent
 
-<context>
-{context}
-</context>
+sql_template = dedent(
+    """
+    Write a SQL query that would answer the user's question,
+    based on the context:
 
-<question>
-{question}
-</question>
+    <context>
+    {context}
+    </context>
 
-SQL Query:"""
+    <question>
+    {question}
+    </question>
 
-vega_spec_template = """Based on the context below, question,
-sql query generate a vega_lite spec, json only no text or comments.
+    SQL Query:
+    """
+)
+chart_spec = dedent(
+    """
+    Based on the context below, question and
+    sql query, return the following chart specification:\n
 
-- the vega_lite spec must not have the "data" key, only "mark" and "encoding".
-- the vega_lite spec must have both "x" and "y" present in encoding dict.
-- the vega_lite spec must contain only fields present on the sql query.
+    <context>
+    {context}
+    </context>
 
-<context>
-{context}
-</context>
+    <question>
+    {question}
+    </question>
 
-<question>
-{question}
-</question>
+    <sql-query>
+    {query}
+    </sql-query>
 
-<sql-query>
-{query}
-</sql-query>
+    ```json
+    {{"chart_type": "bar", "x": "column_name", y: "column_name"}}
+    ```
+    - where "chart_type" can by any type of chart in "bar", "line", "pie",\n
+    "scatter", "area", "boxplot"
+    - where "x" and "y" are the names of columns in the sql-query\n
 
-Vega-Lite Spec:"""
+    Json:
+    """
+)
