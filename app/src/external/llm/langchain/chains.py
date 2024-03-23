@@ -55,7 +55,6 @@ class SQLChain(BaseChain):
 
 
 class SQLEntityExtractionChain(BaseChain):
-
     def __init__(self, llm: Any, retriever: BaseRetriever) -> None:
         super().__init__(llm, retriever)
 
