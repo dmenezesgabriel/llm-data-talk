@@ -1,5 +1,5 @@
 from operator import itemgetter
-from typing import Any
+from typing import Any, Dict
 
 from langchain.chains.llm import LLMChain
 from langchain.schema.runnable import RunnableLambda
@@ -15,65 +15,84 @@ from src.external.llm.langchain.templates import (
 )
 
 
-@log_time
-def get_sql_chain(llm: Any, retriever: BaseRetriever) -> LLMChain:
-    prompt = PromptTemplate(
-        template=sql_template,
-        input_variables=["context", "question"],
-    )
+class SQLChain:
+    def __init__(self, llm: Any, retriever: BaseRetriever):
+        self._llm = llm
+        self._retriever = retriever
 
-    return (
-        {
-            "context": itemgetter("question") | retriever,
-            "question": itemgetter("question"),
-        }
-        | prompt
-        | llm
-        | StrOutputParser()
-    )
+    @log_time
+    def chain(self):
+        prompt = PromptTemplate(
+            template=sql_template,
+            input_variables=["context", "question"],
+        )
 
-
-@log_time
-def get_entity_extraction_chain(
-    llm: Any, retriever: BaseRetriever
-) -> LLMChain:
-    prompt = PromptTemplate(
-        template=entity_extraction,
-        input_variables=["query", "question"],
-    )
-
-    context_sql_chain = get_sql_chain(llm, retriever)
-
-    return (
-        {
-            "query": lambda x: context_sql_chain,
-            "question": itemgetter("question"),
-        }
-        | prompt
-        | llm
-        | JsonOutputParser()
-    )
+        return (
+            {
+                "context": itemgetter("question") | self._retriever,
+                "question": itemgetter("question"),
+            }
+            | prompt
+            | self._llm
+            | StrOutputParser()
+        )
 
 
-@log_time
-def get_chart_chain(llm: Any, retriever: BaseRetriever, conn: Any) -> LLMChain:
+class SQLEntityExtractionChain:
 
-    prompt = PromptTemplate(
-        template=chart_spec,
-        input_variables=["query", "question"],
-    )
-    context_sql_chain = get_sql_chain(llm, retriever)
+    def __init__(self, llm: Any, retriever: BaseRetriever):
+        self._llm = llm
+        self._retriever = retriever
 
-    def _query_to_pandas_schema(sql: str) -> str:
-        return query_to_pandas_schema(sql, conn)
+    @log_time
+    def chain(self):
+        prompt = PromptTemplate(
+            template=entity_extraction,
+            input_variables=["query", "question"],
+        )
 
-    return (
-        {
-            "schema": lambda x: context_sql_chain
-            | RunnableLambda(func=_query_to_pandas_schema),
-            "question": itemgetter("question"),
-        }
-        | prompt
-        | llm
-        | JsonOutputParser()
-    )
+        context_sql_chain = SQLChain(self._llm, self._retriever).chain()
+
+        return (
+            {
+                "query": lambda x: context_sql_chain,
+                "question": itemgetter("question"),
+            }
+            | prompt
+            | self._llm
+            | JsonOutputParser()
+        )
+
+
+class ChartChain:
+    def __init__(self, llm: Any, retriever: BaseRetriever, conn: Any):
+        self._llm = llm
+        self._retriever = retriever
+        self._conn = conn
+
+    @log_time
+    def chain(self):
+        prompt = PromptTemplate(
+            template=chart_spec,
+            input_variables=["query", "question"],
+        )
+        context_sql_chain = SQLChain(self._llm, self._retriever).chain()
+
+        def _query_to_pandas_schema(sql: str) -> str:
+            return query_to_pandas_schema(sql, self._conn)
+
+        def _result(x):
+            return {"x": x}
+
+        return (
+            {
+                "sql": context_sql_chain,
+                "schema": lambda x: context_sql_chain
+                | RunnableLambda(func=_query_to_pandas_schema),
+                "question": itemgetter("question"),
+            }
+            | prompt
+            | self._llm
+            | JsonOutputParser()
+            | RunnableLambda(_result)
+        )
