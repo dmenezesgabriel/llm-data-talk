@@ -15,10 +15,26 @@ from src.external.llm.langchain.templates import (
 )
 
 
-class SQLChain:
+class BaseChain:
     def __init__(self, llm: Any, retriever: BaseRetriever):
         self._llm = llm
         self._retriever = retriever
+        self._intermediates = None
+
+    def _save_intermediates(self, value, **kwargs) -> any:
+        key = kwargs.get("key")
+        if not self._intermediates:
+            self._intermediates = {}
+        self._intermediates[key] = value
+        return value
+
+    def _post_process(self, value: Dict[str, Any]):
+        return {"result": value, "intermediates": self._intermediates}
+
+
+class SQLChain(BaseChain):
+    def __init__(self, llm: Any, retriever: BaseRetriever):
+        super().__init__(llm, retriever)
 
     @log_time
     def chain(self):
@@ -38,11 +54,10 @@ class SQLChain:
         )
 
 
-class SQLEntityExtractionChain:
+class SQLEntityExtractionChain(BaseChain):
 
     def __init__(self, llm: Any, retriever: BaseRetriever):
-        self._llm = llm
-        self._retriever = retriever
+        super().__init__(llm, retriever)
 
     @log_time
     def chain(self):
@@ -64,22 +79,10 @@ class SQLEntityExtractionChain:
         )
 
 
-class ChartChain:
+class ChartChain(BaseChain):
     def __init__(self, llm: Any, retriever: BaseRetriever, conn: Any):
-        self._llm = llm
-        self._retriever = retriever
+        super().__init__(llm, retriever)
         self._conn = conn
-        self._intermediates = None
-
-    def _save_intermediates(self, value, **kwargs) -> any:
-        key = kwargs.get("key")
-        if not self._intermediates:
-            self._intermediates = {}
-        self._intermediates[key] = value
-        return value
-
-    def _post_process(self, value: Dict[str, Any]):
-        return {"result": value, "intermediates": self._intermediates}
 
     @log_time
     def chain(self):
