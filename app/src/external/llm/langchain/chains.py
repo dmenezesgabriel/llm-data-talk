@@ -16,28 +16,28 @@ from src.external.llm.langchain.templates import (
 
 
 class BaseChain:
-    def __init__(self, llm: Any, retriever: BaseRetriever):
+    def __init__(self, llm: Any, retriever: BaseRetriever) -> None:
         self._llm = llm
         self._retriever = retriever
         self._intermediates = None
 
-    def _save_intermediates(self, value, **kwargs) -> any:
+    def _save_intermediates(self, value: Any, **kwargs: Any) -> Any:
         key = kwargs.get("key")
         if not self._intermediates:
             self._intermediates = {}
         self._intermediates[key] = value
         return value
 
-    def _post_process(self, value: Dict[str, Any]):
+    def _post_process(self, value: Dict[str, Any]) -> Dict[str, Any]:
         return {"result": value, "intermediates": self._intermediates}
 
 
 class SQLChain(BaseChain):
-    def __init__(self, llm: Any, retriever: BaseRetriever):
+    def __init__(self, llm: Any, retriever: BaseRetriever) -> None:
         super().__init__(llm, retriever)
 
     @log_time
-    def chain(self):
+    def chain(self) -> LLMChain:
         prompt = PromptTemplate(
             template=sql_template,
             input_variables=["context", "question"],
@@ -56,11 +56,11 @@ class SQLChain(BaseChain):
 
 class SQLEntityExtractionChain(BaseChain):
 
-    def __init__(self, llm: Any, retriever: BaseRetriever):
+    def __init__(self, llm: Any, retriever: BaseRetriever) -> None:
         super().__init__(llm, retriever)
 
     @log_time
-    def chain(self):
+    def chain(self) -> LLMChain:
         prompt = PromptTemplate(
             template=entity_extraction,
             input_variables=["query", "question"],
@@ -80,12 +80,12 @@ class SQLEntityExtractionChain(BaseChain):
 
 
 class ChartChain(BaseChain):
-    def __init__(self, llm: Any, retriever: BaseRetriever, conn: Any):
+    def __init__(self, llm: Any, retriever: BaseRetriever, conn: Any) -> None:
         super().__init__(llm, retriever)
         self._conn = conn
 
     @log_time
-    def chain(self):
+    def chain(self) -> LLMChain:
         prompt = PromptTemplate(
             template=chart_spec,
             input_variables=["query", "question"],
