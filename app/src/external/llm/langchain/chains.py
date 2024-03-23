@@ -69,14 +69,17 @@ class ChartChain:
         self._llm = llm
         self._retriever = retriever
         self._conn = conn
-        self._sql = None
+        self._intermediates = None
 
-    def _save_sql(self, value) -> any:
-        self._sql = value
+    def _save_intermediates(self, value, **kwargs) -> any:
+        key = kwargs.get("key")
+        if not self._intermediates:
+            self._intermediates = {}
+        self._intermediates[key] = value
         return value
 
-    def _result(self, chart: Dict[str, Any]):
-        return {"chart": chart, "sql": self._sql}
+    def _post_process(self, value: Dict[str, Any]):
+        return {"result": value, "intermediates": self._intermediates}
 
     @log_time
     def chain(self):
@@ -91,13 +94,13 @@ class ChartChain:
 
         return (
             {
-                "schema": lambda x: context_sql_chain
-                | RunnableLambda(self._save_sql)
+                "schema": lambda _: context_sql_chain
+                | RunnableLambda(self._save_intermediates).bind(key="sql")
                 | RunnableLambda(func=_query_to_pandas_schema),
                 "question": itemgetter("question"),
             }
             | prompt
             | self._llm
             | JsonOutputParser()
-            | RunnableLambda(self._result)
+            | RunnableLambda(self._post_process)
         )
