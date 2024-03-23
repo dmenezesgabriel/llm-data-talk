@@ -1,6 +1,7 @@
 import logging
 
 import streamlit as st
+from src.common.utils.database import get_database_connection
 from src.common.utils.performance import log_time
 from src.communication.controllers.llm import LLMController
 from src.config import get_config
@@ -38,22 +39,20 @@ def setup_vector_store() -> None:
 
 
 def handle_user_input(user_question: str) -> None:
+    conn = get_database_connection()
     st.session_state.messages.append(
         {"role": "user", "content": user_question}
     )
     retriever = st.session_state.vector_store.as_retriever()
 
-    sql_response = llm_controller.get_sql(
-        {"question": user_question}, retriever
-    )
     chart_response = llm_controller.get_chart(
-        {"question": user_question}, retriever
+        {"question": user_question}, retriever, conn
     )
 
     st.session_state.messages.append(
         {
             "role": "assistant",
-            "content": {"sql": sql_response, "chart": chart_response},
+            "content": {"chart": chart_response},
         }
     )
 

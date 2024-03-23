@@ -15,9 +15,12 @@ class LLMUseCases:
     def get_chart(
         _input: Dict[str, Any],
         retriever: Any,
+        conn: Any,
         llm_gateway: LLMGatewayInterface,
     ) -> Dict[str, Any]:
-        return llm_gateway.get_chart(_input=_input, retriever=retriever)
+        return llm_gateway.get_chart(
+            _input=_input, retriever=retriever, conn=conn
+        )
 
     @staticmethod
     def create_vector_store(

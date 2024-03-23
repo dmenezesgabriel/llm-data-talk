@@ -17,11 +17,14 @@ class LLMController:
         )
 
     def get_chart(
-        self, _input: Dict[str, Any], retriever: Any
+        self, _input: Dict[str, Any], retriever: Any, conn: Any
     ) -> Dict[str, Any]:
         llm_gateway = LLMGateway(self.llm_repository)
         return LLMUseCases.get_chart(
-            _input=_input, retriever=retriever, llm_gateway=llm_gateway
+            _input=_input,
+            retriever=retriever,
+            conn=conn,
+            llm_gateway=llm_gateway,
         )
 
     def create_vector_store(self, text_chunks: list[str]) -> Any:

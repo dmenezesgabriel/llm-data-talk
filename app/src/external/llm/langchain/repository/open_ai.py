@@ -15,18 +15,18 @@ class OpenAiRepository(LLMRepositoryInterface):
         self._api_key = api_key
         self._llm = ChatOpenAI(api_key=self._api_key)
 
-    def get_sql(self, _input: Dict[str, Any], retriever) -> str:
+    def get_sql(self, _input: Dict[str, Any], retriever: Any) -> str:
         sql_chain = SQLChain(llm=self._llm, retriever=retriever)
         return sql_chain.chain().invoke(input=_input)
 
     def get_entities(
-        self, _input: Dict[str, Any], retriever
+        self, _input: Dict[str, Any], retriever: Any
     ) -> Dict[str, Any]:
         sql_chain = SQLEntityExtractionChain(self._llm, retriever)
         return sql_chain.chain().invoke(input=_input)
 
     def get_chart(
-        self, _input: Dict[str, Any], retriever, conn
+        self, _input: Dict[str, Any], retriever: Any, conn: Any
     ) -> Dict[str, Any]:
         sql_chain = ChartChain(self._llm, retriever, conn)
         return sql_chain.chain().invoke(input=_input)

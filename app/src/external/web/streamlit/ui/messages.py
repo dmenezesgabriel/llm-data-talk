@@ -13,22 +13,27 @@ def format_user_message(message_content) -> None:
 
 
 def format_assistant_message(message_content) -> None:
-    sql_code = message_content["sql"]
     chart_spec = message_content["chart"]
+
+    conn = get_database_connection()
+    chart = chart_spec["result"]
+    sql = chart_spec["intermediates"]["sql"]
+    df = pd.read_sql_query(sql, conn)
 
     tab_titles = ["SQL", "Table", "Chart", "Text"]
     tab_sql, tab_table, tab_chart, tab_text = st.tabs(tab_titles)
 
     with tab_sql:
-        st.code(sql_code, language="sql")
+        st.code(sql, language="sql")
 
     with tab_table:
-        conn = get_database_connection()
-        df = pd.read_sql_query(sql_code, conn)
         st.dataframe(df)
 
     with tab_chart:
-        st.write(chart_spec)
+        with st.expander("spec"):
+            st.write(chart_spec)
+
+        st.vega_lite_chart(df, chart)
 
     with tab_text:
         st.write("Not Implemented")

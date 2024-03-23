@@ -13,10 +13,10 @@ class LLMGateway(LLMGatewayInterface):
         return self._llm_repository.get_sql(_input=_input, retriever=retriever)
 
     def get_chart(
-        self, _input: Dict[str, Any], retriever: Any
+        self, _input: Dict[str, Any], retriever: Any, conn: Any
     ) -> Dict[str, Any]:
         return self._llm_repository.get_chart(
-            _input=_input, retriever=retriever
+            _input=_input, retriever=retriever, conn=conn
         )
 
     def create_vector_store(self, text_chunks: List[str]) -> Any:
