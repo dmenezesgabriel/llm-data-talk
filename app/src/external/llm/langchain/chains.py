@@ -69,6 +69,14 @@ class ChartChain:
         self._llm = llm
         self._retriever = retriever
         self._conn = conn
+        self._sql = None
+
+    def _save_sql(self, value) -> any:
+        self._sql = value
+        return value
+
+    def _result(self, chart: Dict[str, Any]):
+        return {"chart": chart, "sql": self._sql}
 
     @log_time
     def chain(self):
@@ -81,18 +89,15 @@ class ChartChain:
         def _query_to_pandas_schema(sql: str) -> str:
             return query_to_pandas_schema(sql, self._conn)
 
-        def _result(x):
-            return {"x": x}
-
         return (
             {
-                "sql": context_sql_chain,
                 "schema": lambda x: context_sql_chain
+                | RunnableLambda(self._save_sql)
                 | RunnableLambda(func=_query_to_pandas_schema),
                 "question": itemgetter("question"),
             }
             | prompt
             | self._llm
             | JsonOutputParser()
-            | RunnableLambda(_result)
+            | RunnableLambda(self._result)
         )

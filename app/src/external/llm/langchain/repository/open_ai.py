@@ -50,21 +50,21 @@ if __name__ == "__main__":
     text_chunks = TextHelper.get_text_chunks(schema)
     vector_store = repository.create_vector_store(text_chunks=text_chunks)
 
-    sql_result = repository.get_sql(
-        _input={"question": "what are the total iron maiden artist sales?"},
-        retriever=vector_store.as_retriever(),
-    )
-    print(50 * "=")
-    print(sql_result)
-    print(50 * "=")
+    # sql_result = repository.get_sql(
+    #     _input={"question": "what are the total iron maiden artist sales?"},
+    #     retriever=vector_store.as_retriever(),
+    # )
+    # print(50 * "=")
+    # print(sql_result)
+    # print(50 * "=")
 
-    entities = repository.get_entities(
-        _input={"question": "what are the total iron maiden artist sales?"},
-        retriever=vector_store.as_retriever(),
-    )
-    print(50 * "=")
-    print(entities)
-    print(50 * "=")
+    # entities = repository.get_entities(
+    #     _input={"question": "what are the total iron maiden artist sales?"},
+    #     retriever=vector_store.as_retriever(),
+    # )
+    # print(50 * "=")
+    # print(entities)
+    # print(50 * "=")
 
     chart_spec = repository.get_chart(
         _input={"question": "what are the total iron maiden artist sales?"},
