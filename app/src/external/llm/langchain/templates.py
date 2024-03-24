@@ -1,5 +1,32 @@
 from textwrap import dedent
 
+intent_extraction_template = dedent(
+    """
+    You need to extract intents from the user question in specified format.\n
+    Extracted intents always should have valid json format, if you don't\n
+    find any intents then respond with empty list.
+
+    Intent Format: List of dict, where each dict having format as:\n
+    {{
+        "intent":"{{question intent}}",
+        "entity":"{{
+            "entity_type": {{question intent target entity type}},
+            "entity_name": {{question intent target entity name}},
+            }}",
+        "action":"{{
+            "action_subject": {{question intent action subject}},
+            "action_details": {{question intent action details}},
+            }}",
+    }}
+
+    <question>
+    {question}
+    </question>
+
+    Intents:
+    """
+)
+
 sql_template = dedent(
     """
     Write a SQL query that would answer the user's question, based on the\n
@@ -19,7 +46,7 @@ sql_template = dedent(
     """
 )
 
-entity_extraction = dedent(
+sql_entity_extraction_template = dedent(
     """
     You need to extract entities from the user query `WHERE` and `HAVING`
     clauses in specified format.\n
@@ -46,7 +73,7 @@ entity_extraction = dedent(
     """
 )
 
-chart_spec = dedent(
+chart_template = dedent(
     """
     Your task is to generate chart configuration for the given dataset and user
     question.\n

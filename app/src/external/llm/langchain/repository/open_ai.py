@@ -7,6 +7,7 @@ from src.external.llm.langchain.chains import (
     ChartChain,
     SQLChain,
     SQLEntityExtractionChain,
+    UserIntentChain,
 )
 
 
@@ -14,6 +15,10 @@ class OpenAiRepository(LLMRepositoryInterface):
     def __init__(self, api_key: str) -> None:
         self._api_key = api_key
         self._llm = ChatOpenAI(api_key=self._api_key)
+
+    def get_user_intent(self, _input: Dict[str, Any], retriever: Any) -> str:
+        user_intent = UserIntentChain(llm=self._llm, retriever=retriever)
+        return user_intent.chain().invoke(input=_input)
 
     def get_sql(self, _input: Dict[str, Any], retriever: Any) -> str:
         sql_chain = SQLChain(llm=self._llm, retriever=retriever)
@@ -66,12 +71,21 @@ if __name__ == "__main__":
     # print(entities)
     # print(50 * "=")
 
-    chart_spec = repository.get_chart(
-        _input={"question": "what are the total iron maiden artist sales?"},
+    # chart_spec = repository.get_chart(
+    #     _input={"question": "what are the total iron maiden artist sales?"},
+    #     retriever=vector_store.as_retriever(),
+    #     conn=conn,
+    # )
+
+    # print(50 * "=")
+    # print(chart_spec)
+    # print(50 * "=")
+
+    user_intent = repository.get_user_intent(
+        _input={"question": "calculate the total iron maiden artist sales"},
         retriever=vector_store.as_retriever(),
-        conn=conn,
     )
 
     print(50 * "=")
-    print(chart_spec)
+    print(user_intent)
     print(50 * "=")

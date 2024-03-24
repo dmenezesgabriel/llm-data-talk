@@ -9,8 +9,9 @@ from langchain_core.retrievers import BaseRetriever
 from src.common.utils.dataframe import query_to_pandas_schema
 from src.common.utils.performance import log_time
 from src.external.llm.langchain.templates import (
-    chart_spec,
-    entity_extraction,
+    chart_template,
+    intent_extraction_template,
+    sql_entity_extraction_template,
     sql_template,
 )
 
@@ -30,6 +31,27 @@ class BaseChain:
 
     def _post_process(self, value: Dict[str, Any]) -> Dict[str, Any]:
         return {"result": value, "intermediates": self._intermediates}
+
+
+class UserIntentChain(BaseChain):
+    def __init__(self, llm: Any, retriever) -> None:
+        super().__init__(llm, retriever)
+
+    @log_time
+    def chain(self) -> LLMChain:
+        prompt = PromptTemplate(
+            template=intent_extraction_template,
+            input_variables=["context", "question"],
+        )
+
+        return (
+            {
+                "question": itemgetter("question"),
+            }
+            | prompt
+            | self._llm
+            | JsonOutputParser()
+        )
 
 
 class SQLChain(BaseChain):
@@ -61,7 +83,7 @@ class SQLEntityExtractionChain(BaseChain):
     @log_time
     def chain(self) -> LLMChain:
         prompt = PromptTemplate(
-            template=entity_extraction,
+            template=sql_entity_extraction_template,
             input_variables=["query", "question"],
         )
 
@@ -86,7 +108,7 @@ class ChartChain(BaseChain):
     @log_time
     def chain(self) -> LLMChain:
         prompt = PromptTemplate(
-            template=chart_spec,
+            template=chart_template,
             input_variables=["query", "question"],
         )
         context_sql_chain = SQLChain(self._llm, self._retriever).chain()
