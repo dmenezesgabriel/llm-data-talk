@@ -8,23 +8,19 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.retrievers import BaseRetriever
 from src.common.utils.dataframe import query_to_pandas_schema
 from src.common.utils.performance import log_time
-from src.external.llm.langchain.templates import (
-    chart_spec,
-    entity_extraction,
-    sql_template,
-)
+from src.external.llm.langchain.templates import (chart_spec,
+                                                  entity_extraction,
+                                                  sql_template)
 
 
 class BaseChain:
     def __init__(self, llm: Any, retriever: BaseRetriever) -> None:
         self._llm = llm
         self._retriever = retriever
-        self._intermediates = None
+        self._intermediates: Dict[str, Any] = {}
 
     def _save_intermediates(self, value: Any, **kwargs: Any) -> Any:
         key = kwargs.get("key")
-        if not self._intermediates:
-            self._intermediates = {}
         self._intermediates[key] = value
         return value
 
