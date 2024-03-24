@@ -8,9 +8,11 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.retrievers import BaseRetriever
 from src.common.utils.dataframe import query_to_pandas_schema
 from src.common.utils.performance import log_time
-from src.external.llm.langchain.templates import (chart_spec,
-                                                  entity_extraction,
-                                                  sql_template)
+from src.external.llm.langchain.templates import (
+    chart_spec,
+    entity_extraction,
+    sql_template,
+)
 
 
 class BaseChain:
@@ -21,6 +23,8 @@ class BaseChain:
 
     def _save_intermediates(self, value: Any, **kwargs: Any) -> Any:
         key = kwargs.get("key")
+        if key is None:
+            raise ValueError("Key must be provided to save intermediates.")
         self._intermediates[key] = value
         return value
 
