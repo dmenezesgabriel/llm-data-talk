@@ -14,7 +14,7 @@ from src.external.llm.langchain.chains import (
 class OpenAiRepository(LLMRepositoryInterface):
     def __init__(self, api_key: str) -> None:
         self._api_key = api_key
-        self._llm = ChatOpenAI(api_key=self._api_key)
+        self._llm = ChatOpenAI(api_key=self._api_key)  # type: ignore
 
     def get_user_intent(self, _input: Dict[str, Any], retriever: Any) -> str:
         user_intent = UserIntentChain(llm=self._llm, retriever=retriever)
