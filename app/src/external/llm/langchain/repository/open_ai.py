@@ -21,8 +21,8 @@ class OpenAiRepository(LLMRepositoryInterface):
         datasource = ResponseFormatRouteChain(llm=self._llm)
         return datasource.chain().invoke(input=_input)
 
-    def get_user_intent(self, _input: Dict[str, Any], retriever: Any) -> str:
-        user_intent = UserIntentChain(llm=self._llm, retriever=retriever)
+    def get_user_intent(self, _input: Dict[str, Any]) -> str:
+        user_intent = UserIntentChain(llm=self._llm)
         return user_intent.chain().invoke(input=_input)
 
     def get_sql(self, _input: Dict[str, Any], retriever: Any) -> str:
@@ -88,7 +88,6 @@ if __name__ == "__main__":
 
     user_intent = repository.get_user_intent(
         _input={"question": "calculate the total iron maiden artist sales"},
-        retriever=vector_store.as_retriever(),
     )
 
     print(50 * "=")

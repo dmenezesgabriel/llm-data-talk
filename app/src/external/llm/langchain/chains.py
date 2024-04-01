@@ -63,8 +63,8 @@ class ResponseFormatRouteChain(BaseChain):
 
 
 class UserIntentChain(BaseChain):
-    def __init__(self, llm: Any, retriever) -> None:
-        super().__init__(llm, retriever)
+    def __init__(self, llm: Any) -> None:
+        super().__init__(llm)
 
     @log_time
     def chain(self) -> LLMChain:
