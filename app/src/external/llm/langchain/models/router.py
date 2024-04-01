@@ -5,7 +5,7 @@ from langchain_core.pydantic_v1 import BaseModel, Field
 
 
 class ResponseTypeRouteQuery(BaseModel):
-    response_type: Literal["chart", "sql_query_string", "text", "table"] = (
+    response_format: Literal["chart", "sql_query_string", "text", "table"] = (
         Field(
             ...,
             description=dedent(

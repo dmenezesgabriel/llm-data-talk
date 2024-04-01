@@ -37,7 +37,7 @@ class BaseChain:
         return {"result": value, "intermediates": self._intermediates}
 
 
-class ResponseTypeRouteChain(BaseChain):
+class ResponseFormatRouteChain(BaseChain):
 
     def __init__(self, llm) -> None:
         super().__init__(llm)
