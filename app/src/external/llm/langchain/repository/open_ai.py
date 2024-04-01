@@ -1,6 +1,6 @@
 from typing import Any, Dict
 
-from langchain_community.vectorstores import FAISS
+from langchain_community.vectorstores import Chroma
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from src.common.interfaces.llm_repository import LLMRepositoryInterface
 from src.external.llm.langchain.chains import (
@@ -43,7 +43,7 @@ class OpenAiRepository(LLMRepositoryInterface):
 
     def create_vector_store(self, text_chunks):
         embeddings = OpenAIEmbeddings(openai_api_key=self._api_key)
-        return FAISS.from_texts(texts=text_chunks, embedding=embeddings)
+        return Chroma.from_texts(texts=text_chunks, embedding=embeddings)
 
 
 if __name__ == "__main__":
@@ -76,23 +76,23 @@ if __name__ == "__main__":
     # print(entities)
     # print(50 * "=")
 
-    # chart_spec = repository.get_chart(
-    #     _input={"question": "what are the total iron maiden artist sales?"},
-    #     retriever=vector_store.as_retriever(),
-    #     conn=conn,
-    # )
-
-    # print(50 * "=")
-    # print(chart_spec)
-    # print(50 * "=")
-
-    user_intent = repository.get_user_intent(
-        _input={"question": "calculate the total iron maiden artist sales"},
+    chart_spec = repository.get_chart(
+        _input={"question": "what are the total iron maiden artist sales?"},
+        retriever=vector_store.as_retriever(),
+        conn=conn,
     )
 
     print(50 * "=")
-    print(user_intent)
+    print(chart_spec)
     print(50 * "=")
+
+    # user_intent = repository.get_user_intent(
+    #     _input={"question": "calculate the total iron maiden artist sales"},
+    # )
+
+    # print(50 * "=")
+    # print(user_intent)
+    # print(50 * "=")
 
     # response_format = repository.get_response_format(
     #     _input={"question": "what is the top 10 artists by sales?"},
