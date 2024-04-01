@@ -5,12 +5,12 @@ from typing import Any, Dict
 class LLMRepositoryInterface(ABC):
 
     @abstractmethod
-    def get_sql(self, user_question: Dict[str, Any], retriever: Any) -> str:
+    def get_sql(self, _input: Dict[str, Any], retriever: Any) -> str:
         raise NotImplementedError()
 
     @abstractmethod
     def get_chart(
-        self, user_question: Dict[str, Any], retriever: Any, conn: Any
+        self, _input: Dict[str, Any], retriever: Any, conn: Any
     ) -> Dict[str, Any]:
         raise NotImplementedError()
 
