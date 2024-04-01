@@ -1,13 +1,15 @@
 from operator import itemgetter
-from typing import Any, Dict
+from textwrap import dedent
+from typing import Any, Dict, Optional
 
 from langchain.chains.llm import LLMChain
 from langchain.schema.runnable import RunnableLambda
 from langchain_core.output_parsers import JsonOutputParser, StrOutputParser
-from langchain_core.prompts import PromptTemplate
+from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
 from langchain_core.retrievers import BaseRetriever
 from src.common.utils.dataframe import query_to_pandas_schema
 from src.common.utils.performance import log_time
+from src.external.llm.langchain.models.router import ResponseTypeRouteQuery
 from src.external.llm.langchain.templates import (
     chart_template,
     intent_extraction_template,
@@ -17,7 +19,9 @@ from src.external.llm.langchain.templates import (
 
 
 class BaseChain:
-    def __init__(self, llm: Any, retriever: BaseRetriever) -> None:
+    def __init__(
+        self, llm: Any, retriever: Optional[BaseRetriever] = None
+    ) -> None:
         self._llm = llm
         self._retriever = retriever
         self._intermediates: Dict[str, Any] = {}
@@ -31,6 +35,31 @@ class BaseChain:
 
     def _post_process(self, value: Dict[str, Any]) -> Dict[str, Any]:
         return {"result": value, "intermediates": self._intermediates}
+
+
+class ResponseTypeRouteChain(BaseChain):
+
+    def __init__(self, llm) -> None:
+        super().__init__(llm)
+
+    @log_time
+    def chain(self) -> LLMChain:
+        structured_llm = self._llm.with_structured_output(
+            ResponseTypeRouteQuery
+        )
+        system = dedent(
+            """
+            You are an expert at routing a user question to the appropriate
+            response type. Based on the analysis the question is
+            referring to, route to the relevant response type.
+            """
+        )
+
+        prompt = ChatPromptTemplate.from_messages(
+            [("system", system), ("human", "{question}")]
+        )
+
+        return prompt | structured_llm
 
 
 class UserIntentChain(BaseChain):

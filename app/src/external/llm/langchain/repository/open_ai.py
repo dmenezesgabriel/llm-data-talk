@@ -5,6 +5,7 @@ from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from src.common.interfaces.llm_repository import LLMRepositoryInterface
 from src.external.llm.langchain.chains import (
     ChartChain,
+    ResponseTypeRouteChain,
     SQLChain,
     SQLEntityExtractionChain,
     UserIntentChain,
@@ -15,6 +16,10 @@ class OpenAiRepository(LLMRepositoryInterface):
     def __init__(self, api_key: str) -> None:
         self._api_key = api_key
         self._llm = ChatOpenAI(api_key=self._api_key)  # type: ignore
+
+    def get_response_type(self, _input: Dict[str, Any]) -> str:
+        datasource = ResponseTypeRouteChain(llm=self._llm)
+        return datasource.chain().invoke(input=_input)
 
     def get_user_intent(self, _input: Dict[str, Any], retriever: Any) -> str:
         user_intent = UserIntentChain(llm=self._llm, retriever=retriever)
@@ -81,11 +86,19 @@ if __name__ == "__main__":
     # print(chart_spec)
     # print(50 * "=")
 
-    user_intent = repository.get_user_intent(
-        _input={"question": "calculate the total iron maiden artist sales"},
-        retriever=vector_store.as_retriever(),
+    # user_intent = repository.get_user_intent(
+    #     _input={"question": "calculate the total iron maiden artist sales"},
+    #     retriever=vector_store.as_retriever(),
+    # )
+
+    # print(50 * "=")
+    # print(user_intent)
+    # print(50 * "=")
+
+    response_type_result = repository.get_response_type(
+        _input={"question": "what is the top 10 artists by sales?"},
     )
 
     print(50 * "=")
-    print(user_intent)
+    print(response_type_result.response_type)
     print(50 * "=")
