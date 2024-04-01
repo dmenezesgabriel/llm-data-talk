@@ -43,6 +43,21 @@ cd app
 PYTHONDONTWRITEBYTECODE=1 python -m src.external.llm.langchain.repository.open_ai
 ```
 
+## Localstack
+
+- **Run localstack Bash**:
+
+  ```sh
+  docker compose up -d localstack && \
+  docker compose exec localstack bash
+  ```
+
+- **Use awscli inside container**:
+
+  ```sh
+  aws --endpoint-url=http://127.0.0.1:4566 s3 ls
+  ```
+
 ## Architecture
 
 ![clean-architecture](docs/assets/clean_architecture.jpg)
