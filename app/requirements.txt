@@ -1,9 +1,10 @@
 duckdb==0.10.0
 jupyterlab==4.1.4
 langchain==0.1.11
+langgraph==0.0.32
+langchain-openai==0.0.8
 pandas==2.2.1
 streamlit==1.32.0
-langchain-openai==0.0.8
 python-dotenv==1.0.1
 # faiss-cpu==1.8.0
 chromadb==0.4.24
