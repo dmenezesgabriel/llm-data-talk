@@ -40,7 +40,7 @@ PYTHONDONTWRITEBYTECODE=1 streamlit run main.py
 
 ```sh
 cd app
-PYTHONDONTWRITEBYTECODE=1 python -m src.external.llm.langchain.repository.open_ai
+PYTHONDONTWRITEBYTECODE=1 python -m src.external.llm.langchain.chains
 ```
 
 ## Localstack

@@ -157,3 +157,65 @@ class StatefulChartChain(BaseChain):
             | JsonOutputParser()
             | RunnableLambda(self._post_process)
         )
+
+
+if __name__ == "__main__":
+    from langchain_community.vectorstores import Chroma
+    from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+    from src.common.utils.database import get_database_connection
+    from src.config import get_config
+    from src.external.llm.langchain.helpers.text import TextHelper
+
+    conn = get_database_connection()
+    with open("./data/schema.sql") as f:
+        schema = f.read()
+
+    config = get_config()
+    text_chunks = TextHelper.get_text_chunks(schema)
+    llm = ChatOpenAI(api_key=config.OPENAI_API_KEY)
+    embeddings = OpenAIEmbeddings(api_key=config.OPENAI_API_KEY)
+    vector_store = Chroma.from_texts(texts=text_chunks, embedding=embeddings)
+    retriever = vector_store.as_retriever()
+
+    # ======================================================================= #
+    response_formate_route_chain = ResponseFormatRouteChain(llm=llm)
+    response_formate_route_chain_result = (
+        response_formate_route_chain.chain().invoke(
+            input={"question": "what is the top 10 artists by sales?"}
+        )
+    )
+    print(50 * "=")
+    print(response_formate_route_chain_result)
+    print(50 * "=")
+    # ======================================================================= #
+    user_intent = UserIntentChain(llm=llm)
+    user_intent_result = user_intent.chain().invoke(
+        input={"question": "calculate the total iron maiden artist sales"}
+    )
+    print(50 * "=")
+    print(user_intent_result)
+    print(50 * "=")
+    # ======================================================================= #
+    sql_chain = SQLChain(llm=llm, retriever=retriever)
+    sql_chain_result = sql_chain.chain().invoke(
+        input={"question": "what are the total iron maiden artist sales?"}
+    )
+    print(50 * "=")
+    print(sql_chain_result)
+    print(50 * "=")
+    # ======================================================================= #
+    entity_extraction = SQLEntityExtractionChain(llm, retriever)
+    entity_extraction_result = entity_extraction.chain().invoke(
+        input={"question": "what are the total iron maiden artist sales?"}
+    )
+    print(50 * "=")
+    print(entity_extraction_result)
+    print(50 * "=")
+    # ======================================================================= #
+    chart_spec = StatefulChartChain(llm, retriever, conn)
+    chart_spec_result = chart_spec.chain().invoke(
+        input={"question": "what are the total iron maiden artist sales?"}
+    )
+    print(50 * "=")
+    print(chart_spec_result)
+    print(50 * "=")
