@@ -13,6 +13,7 @@ from src.external.llm.langchain.models.router import ResponseTypeRouteQuery
 from src.external.llm.langchain.templates import (
     chart_template,
     intent_extraction_template,
+    re_write_template,
     sql_entity_extraction_template,
     sql_template,
 )
@@ -105,6 +106,28 @@ class SQLChain(BaseChain):
         )
 
 
+class PromptReWriterChain(BaseChain):
+    def __init__(self, llm: Any, retriever: BaseRetriever) -> None:
+        super().__init__(llm, retriever)
+
+    @log_time
+    def chain(self) -> LLMChain:
+        prompt = PromptTemplate(
+            template=re_write_template,
+            input_variables=["context", "question"],
+        )
+
+        return (
+            {
+                "context": itemgetter("question") | self._retriever,
+                "question": itemgetter("question"),
+            }
+            | prompt
+            | self._llm
+            | StrOutputParser()
+        )
+
+
 class SQLEntityExtractionChain(BaseChain):
     def __init__(self, llm: Any, retriever: BaseRetriever) -> None:
         super().__init__(llm, retriever)
@@ -178,44 +201,54 @@ if __name__ == "__main__":
     retriever = vector_store.as_retriever()
 
     # ======================================================================= #
-    response_formate_route_chain = ResponseFormatRouteChain(llm=llm)
-    response_formate_route_chain_result = (
-        response_formate_route_chain.chain().invoke(
-            input={"question": "what is the top 10 artists by sales?"}
-        )
-    )
-    print(50 * "=")
-    print(response_formate_route_chain_result)
-    print(50 * "=")
+    # response_formate_route_chain = ResponseFormatRouteChain(llm=llm)
+    # response_formate_route_chain_result = (
+    #     response_formate_route_chain.chain().invoke(
+    #         input={"question": "what is the top 10 artists by sales?"}
+    #     )
+    # )
+    # print(50 * "=")
+    # print(response_formate_route_chain_result)
+    # print(50 * "=")
     # ======================================================================= #
-    user_intent = UserIntentChain(llm=llm)
-    user_intent_result = user_intent.chain().invoke(
-        input={"question": "calculate the total iron maiden artist sales"}
-    )
-    print(50 * "=")
-    print(user_intent_result)
-    print(50 * "=")
+    # user_intent = UserIntentChain(llm=llm)
+    # user_intent_result = user_intent.chain().invoke(
+    #     input={"question": "calculate the total iron maiden artist sales"}
+    # )
+    # print(50 * "=")
+    # print(user_intent_result)
+    # print(50 * "=")
     # ======================================================================= #
-    sql_chain = SQLChain(llm=llm, retriever=retriever)
-    sql_chain_result = sql_chain.chain().invoke(
-        input={"question": "what are the total iron maiden artist sales?"}
-    )
-    print(50 * "=")
-    print(sql_chain_result)
-    print(50 * "=")
+    # prompt_rewriter = PromptReWriterChain(llm=llm, retriever=retriever)
+    # prompt_rewriter_result = prompt_rewriter.chain().invoke(
+    #     input={"question": "what are the total iron maiden artist sales?"}
+    # )
+    # print(50 * "=")
+    # print(prompt_rewriter_result)
+    # print(50 * "=")
     # ======================================================================= #
-    entity_extraction = SQLEntityExtractionChain(llm, retriever)
-    entity_extraction_result = entity_extraction.chain().invoke(
-        input={"question": "what are the total iron maiden artist sales?"}
-    )
-    print(50 * "=")
-    print(entity_extraction_result)
-    print(50 * "=")
+    # sql_chain = SQLChain(llm=llm, retriever=retriever)
+    # sql_chain_result = sql_chain.chain().invoke(
+    #     input={
+    #         "question": "What is the total sales figure for the artist Iron Maiden?"
+    #     }
+    # )
+    # print(50 * "=")
+    # print(sql_chain_result)
+    # print(50 * "=")
     # ======================================================================= #
-    chart_spec = StatefulChartChain(llm, retriever, conn)
-    chart_spec_result = chart_spec.chain().invoke(
-        input={"question": "what are the total iron maiden artist sales?"}
-    )
-    print(50 * "=")
-    print(chart_spec_result)
-    print(50 * "=")
+    # entity_extraction = SQLEntityExtractionChain(llm, retriever)
+    # entity_extraction_result = entity_extraction.chain().invoke(
+    #     input={"question": "what are the total iron maiden artist sales?"}
+    # )
+    # print(50 * "=")
+    # print(entity_extraction_result)
+    # print(50 * "=")
+    # ======================================================================= #
+    # chart_spec = StatefulChartChain(llm, retriever, conn)
+    # chart_spec_result = chart_spec.chain().invoke(
+    #     input={"question": "what are the total iron maiden artist sales?"}
+    # )
+    # print(50 * "=")
+    # print(chart_spec_result)
+    # print(50 * "=")

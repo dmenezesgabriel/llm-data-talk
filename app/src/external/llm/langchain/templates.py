@@ -28,6 +28,30 @@ Intents:
 """
 )
 
+re_write_template = dedent(
+    """
+You are a question re-writer that converts an input question to a
+better version that is optmized for vectorstore retrieval. Look at the
+initial question and formulate an improved question.\n
+Here is the initial question: {question} \n. Improved question with no
+premable:\n
+
+<context>
+{context}
+</context>
+
+<question>
+{question}
+</question>
+
+<question>
+{question}
+</question>
+
+Prompt:
+"""
+)
+
 sql_template = dedent(
     """
 Write a SQL query that would answer the user's question, based on the \
