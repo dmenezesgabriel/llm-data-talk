@@ -129,10 +129,13 @@ class SQLEntityExtractionChain(BaseChain):
         )
 
 
-class ChartChain(BaseChain):
+class StatefulChartChain(BaseChain):
     def __init__(self, llm: Any, retriever: BaseRetriever, conn: Any) -> None:
         super().__init__(llm, retriever)
         self._conn = conn
+
+    def _query_to_pandas_schema(self, sql: str) -> str:
+        return query_to_pandas_schema(sql, self._conn)
 
     @log_time
     def chain(self) -> LLMChain:
@@ -142,14 +145,11 @@ class ChartChain(BaseChain):
         )
         context_sql_chain = SQLChain(self._llm, self._retriever).chain()
 
-        def _query_to_pandas_schema(sql: str) -> str:
-            return query_to_pandas_schema(sql, self._conn)
-
         return (
             {
                 "schema": lambda _: context_sql_chain
                 | RunnableLambda(self._save_intermediates).bind(key="sql")
-                | RunnableLambda(func=_query_to_pandas_schema),
+                | RunnableLambda(func=self._query_to_pandas_schema),
                 "question": itemgetter("question"),
             }
             | prompt

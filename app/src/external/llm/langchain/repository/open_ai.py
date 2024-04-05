@@ -4,10 +4,10 @@ from langchain_community.vectorstores import Chroma
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from src.common.interfaces.llm_repository import LLMRepositoryInterface
 from src.external.llm.langchain.chains import (
-    ChartChain,
     ResponseFormatRouteChain,
     SQLChain,
     SQLEntityExtractionChain,
+    StatefulChartChain,
     UserIntentChain,
 )
 
@@ -38,7 +38,7 @@ class OpenAiRepository(LLMRepositoryInterface):
     def get_chart(
         self, _input: Dict[str, Any], retriever: Any, conn: Any
     ) -> Dict[str, Any]:
-        sql_chain = ChartChain(self._llm, retriever, conn)
+        sql_chain = StatefulChartChain(self._llm, retriever, conn)
         return sql_chain.chain().invoke(input=_input)
 
     def create_vector_store(self, text_chunks):
