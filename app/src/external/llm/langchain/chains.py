@@ -152,6 +152,27 @@ class SQLEntityExtractionChain(BaseChain):
         )
 
 
+class ChartChain(BaseChain):
+    def __init__(self, llm: Any) -> None:
+        super().__init__(llm)
+
+    def chain(self) -> LLMChain:
+        prompt = PromptTemplate(
+            template=chart_template,
+            input_variables=["query", "question"],
+        )
+
+        return (
+            {
+                "schema": itemgetter("schema"),
+                "question": itemgetter("question"),
+            }
+            | prompt
+            | self._llm
+            | JsonOutputParser()
+        )
+
+
 class StatefulChartChain(BaseChain):
     def __init__(self, llm: Any, retriever: BaseRetriever, conn: Any) -> None:
         super().__init__(llm, retriever)
