@@ -16,8 +16,8 @@ def format_assistant_message(message_content) -> None:
     chart_spec = message_content["chart"]
 
     conn = get_database_connection()
-    chart = chart_spec["result"]
-    sql = chart_spec["intermediates"]["sql"]
+    chart = chart_spec["chart_spec"]
+    sql = chart_spec["sql_query"]
     df = pd.read_sql_query(sql, conn)
 
     tab_titles = ["SQL", "Table", "Chart", "Text"]

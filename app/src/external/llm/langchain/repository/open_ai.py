@@ -10,6 +10,7 @@ from src.external.llm.langchain.chains import (
     StatefulChartChain,
     UserIntentChain,
 )
+from src.external.llm.langchain.graphs import ChartGraph
 
 
 class OpenAiRepository(LLMRepositoryInterface):
@@ -38,8 +39,8 @@ class OpenAiRepository(LLMRepositoryInterface):
     def get_chart(
         self, _input: Dict[str, Any], retriever: Any, conn: Any
     ) -> Dict[str, Any]:
-        chart_spec = StatefulChartChain(self._llm, retriever, conn)
-        return chart_spec.chain().invoke(input=_input)
+        chart_spec = ChartGraph(self._llm, retriever, conn)
+        return chart_spec.graph().invoke(input=_input)
 
     def create_vector_store(self, text_chunks):
         embeddings = OpenAIEmbeddings(api_key=self._api_key)
