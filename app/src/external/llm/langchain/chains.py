@@ -9,7 +9,7 @@ from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
 from langchain_core.retrievers import BaseRetriever
 from src.common.utils.dataframe import query_to_pandas_schema
 from src.common.utils.performance import log_time
-from src.external.llm.langchain.models.router import ResponseTypeRouteQuery
+from src.external.llm.langchain.models import ResponseTypeRouteQuery
 from src.external.llm.langchain.templates import (
     chart_template,
     intent_extraction_template,
@@ -230,7 +230,9 @@ if __name__ == "__main__":
     # sql_chain = SQLChain(llm=llm, retriever=retriever)
     # sql_chain_result = sql_chain.chain().invoke(
     #     input={
-    #         "question": "What is the total sales figure for the artist Iron Maiden?"
+    #         "question": (
+    #             "What is the total sales figure for the artist Iron Maiden?"
+    #         )
     #     }
     # )
     # print(50 * "=")

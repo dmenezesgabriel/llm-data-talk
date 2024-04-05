@@ -44,11 +44,7 @@ premable:\n
 {question}
 </question>
 
-<question>
-{question}
-</question>
-
-Prompt:
+Re-written question:
 """
 )
 
