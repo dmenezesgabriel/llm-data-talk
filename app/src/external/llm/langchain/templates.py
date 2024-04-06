@@ -29,7 +29,7 @@ Intents:
 )
 
 
-SQL_GENERATIN_TEMPLATE = dedent(
+SQL_GENERATION_TEMPLATE = dedent(
     """
 Write a SQL query that would answer the user's question, based on the \
 context below.
@@ -99,7 +99,7 @@ if __name__ == "__main__":
     print(20 * "=")
     print(USER_INTENT_EXTRACTION_TEMPLATE)
     print(20 * "=")
-    print(SQL_GENERATIN_TEMPLATE)
+    print(SQL_GENERATION_TEMPLATE)
     print(20 * "=")
     print(SQL_ENTITY_EXTRACTION_TEMPLATE)
     print(20 * "=")

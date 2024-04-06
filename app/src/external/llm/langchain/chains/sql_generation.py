@@ -7,7 +7,7 @@ from langchain_core.prompts import PromptTemplate
 from langchain_core.retrievers import BaseRetriever
 from src.common.utils.performance import log_time
 from src.external.llm.langchain.chains.base import BaseChain
-from src.external.llm.langchain.templates import SQL_GENERATIN_TEMPLATE
+from src.external.llm.langchain.templates import SQL_GENERATION_TEMPLATE
 
 
 class SQLGenerationChain(BaseChain):
@@ -17,7 +17,7 @@ class SQLGenerationChain(BaseChain):
     @log_time
     def chain(self) -> LLMChain:
         prompt = PromptTemplate(
-            template=SQL_GENERATIN_TEMPLATE,
+            template=SQL_GENERATION_TEMPLATE,
             input_variables=["context", "question"],
         )
 
