@@ -2,7 +2,10 @@ from typing import Any, Dict
 
 from langgraph.graph import END, StateGraph
 from src.common.utils.dataframe import query_to_pandas_schema
-from src.external.llm.langchain.chains import ChartChain, SQLChain
+from src.external.llm.langchain.chains.chart_generation import (
+    ChartGenerationChain,
+)
+from src.external.llm.langchain.chains.sql_generation import SQLGenerationChain
 from typing_extensions import TypedDict
 
 
@@ -23,7 +26,9 @@ class ChartGraph:
     def _generate_sql(self, state):
         question = state["question"]
 
-        sql_chain = SQLChain(llm=self._llm, retriever=self._retriever)
+        sql_chain = SQLGenerationChain(
+            llm=self._llm, retriever=self._retriever
+        )
         sql_query = sql_chain.chain().invoke(input={"question": question})
         return {
             "question": question,
@@ -45,7 +50,7 @@ class ChartGraph:
         sql_query = state["sql_query"]
         dataframe_schema = state["dataframe_schema"]
 
-        chart_chain = ChartChain(llm=self._llm)
+        chart_chain = ChartGenerationChain(llm=self._llm)
         chart_spec = chart_chain.chain().invoke(
             input={"question": question, "schema": dataframe_schema}
         )
