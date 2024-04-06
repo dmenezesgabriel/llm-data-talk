@@ -8,18 +8,18 @@ from langchain_core.retrievers import BaseRetriever
 from src.common.utils.performance import log_time
 from src.external.llm.langchain.chains.base import BaseChain
 from src.external.llm.langchain.templates import (
-    ANALYTICS_ENGINING_PLANNER_TEMPLATE,
+    COMPOUND_QUESTION_EXTRACTOR_TEMPLATE,
 )
 
 
-class AnalyticsEngineeringPlannerChain(BaseChain):
+class CompoundQuestionExtractorChain(BaseChain):
     def __init__(self, llm: Any, retriever: BaseRetriever) -> None:
         super().__init__(llm, retriever)
 
     @log_time
     def chain(self) -> LLMChain:
         prompt = PromptTemplate(
-            template=ANALYTICS_ENGINING_PLANNER_TEMPLATE,
+            template=COMPOUND_QUESTION_EXTRACTOR_TEMPLATE,
             input_variables=["context", "question"],
         )
 
@@ -53,11 +53,12 @@ if __name__ == "__main__":
     retriever = vector_store.as_retriever()
 
     # ======================================================================= #
-    sql_chain = AnalyticsEngineeringPlannerChain(llm=llm, retriever=retriever)
+    sql_chain = CompoundQuestionExtractorChain(llm=llm, retriever=retriever)
     for question in [
         "what are the top 20 artists by sales?",
-        "Plot the top 10 artists by sales",
-        "What is the artist with most sales?",
+        "Plot a chart with the top 10 artists by sales with different colors"
+        "for each artist",
+        "which is the artist with most sales?",
         "What is the artist with the most sales and the one with less sales? "
         "Also give me the difference in percentage of sales between the two",
     ]:

@@ -1,42 +1,21 @@
 from textwrap import dedent
 
-ANALYTICS_ENGINING_PLANNER_TEMPLATE = dedent(
+COMPOUND_QUESTION_EXTRACTOR_TEMPLATE = dedent(
     """
-You are an analytics engineering specialist and \
-will lead a team of analytics engineers to execute analysis that best \
-answers the user's questions based on the context below.
-The analysis will always start with an SQL query and end with one of the \
-following options: chart, table or text.
-You must identify, separate and list complete analysis tasks. There is no \
-problem to have only one task if it already answer the user questions.
-The response format must be the format that best answers the user \
-question being one of the three following options: chart, table or \
-text.
-The question must be clear, objective, concise, very specific and be \
-optimized for document retrieval in a vector database.
-Return a valid JSON format response without permeable or comments.
+You are an expert in data analysis and text interpretation. Identify \
+if the question is a double-barreled question. Then extract each \
+question exactly as it was written to a valid JSON format in the below \
+structure.
+Questions with a single action should not be splitted.
 
-Tasks list format: List of dict where each dict having format as:
-
-{{
-    "question":"{{business question to be answered}}",
-    "final_response_format":"{{task response format}}",
-}},
-{{
-    "question":"{{business question to be answered}}",
-    "final_response_format":"{{task response format}}",
-}}
-
-
-<context>
-{context}
-</context>
+[
+    {{"question":"{{question to be answered}}"}},
+    {{"question":"{{question to be answered}}"}}
+]
 
 <question>
 {question}
 </question>
-
-Tasks:
 """
 )
 
