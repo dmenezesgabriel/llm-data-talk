@@ -6,6 +6,7 @@ You are an expert in data analysis and text interpretation. Identify \
 if the question is a double-barreled question. Then extract each \
 question exactly as it was written to a valid JSON format in the below \
 structure.
+Add the missing subjects if needed.
 Questions with a single action should not be splitted.
 
 [
@@ -18,6 +19,7 @@ Questions with a single action should not be splitted.
 </question>
 """
 )
+
 
 USER_INTENT_EXTRACTION_TEMPLATE = dedent(
     """

@@ -13,19 +13,18 @@ from src.external.llm.langchain.templates import (
 
 
 class CompoundQuestionExtractorChain(BaseChain):
-    def __init__(self, llm: Any, retriever: BaseRetriever) -> None:
-        super().__init__(llm, retriever)
+    def __init__(self, llm) -> None:
+        super().__init__(llm)
 
     @log_time
     def chain(self) -> LLMChain:
         prompt = PromptTemplate(
             template=COMPOUND_QUESTION_EXTRACTOR_TEMPLATE,
-            input_variables=["context", "question"],
+            input_variables=["question"],
         )
 
         return (
             {
-                "context": itemgetter("question") | self._retriever,
                 "question": itemgetter("question"),
             }
             | prompt
@@ -53,7 +52,7 @@ if __name__ == "__main__":
     retriever = vector_store.as_retriever()
 
     # ======================================================================= #
-    sql_chain = CompoundQuestionExtractorChain(llm=llm, retriever=retriever)
+    sql_chain = CompoundQuestionExtractorChain(llm=llm)
     for question in [
         "what are the top 20 artists by sales?",
         "Plot a chart with the top 10 artists by sales with different colors"
