@@ -7,10 +7,9 @@ from src.external.llm.langchain.chains import (
     ResponseFormatRouteChain,
     SQLChain,
     SQLEntityExtractionChain,
-    StatefulChartChain,
     UserIntentChain,
 )
-from src.external.llm.langchain.graphs import ChartGraph
+from src.external.llm.langchain.graphs.chart import ChartGraph
 
 
 class OpenAiRepository(LLMRepositoryInterface):

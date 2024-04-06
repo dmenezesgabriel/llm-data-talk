@@ -13,7 +13,6 @@ from src.external.llm.langchain.models import ResponseTypeRouteQuery
 from src.external.llm.langchain.templates import (
     chart_template,
     intent_extraction_template,
-    re_write_template,
     sql_entity_extraction_template,
     sql_template,
 )
@@ -92,28 +91,6 @@ class SQLChain(BaseChain):
     def chain(self) -> LLMChain:
         prompt = PromptTemplate(
             template=sql_template,
-            input_variables=["context", "question"],
-        )
-
-        return (
-            {
-                "context": itemgetter("question") | self._retriever,
-                "question": itemgetter("question"),
-            }
-            | prompt
-            | self._llm
-            | StrOutputParser()
-        )
-
-
-class PromptReWriterChain(BaseChain):
-    def __init__(self, llm: Any, retriever: BaseRetriever) -> None:
-        super().__init__(llm, retriever)
-
-    @log_time
-    def chain(self) -> LLMChain:
-        prompt = PromptTemplate(
-            template=re_write_template,
             input_variables=["context", "question"],
         )
 
@@ -238,14 +215,6 @@ if __name__ == "__main__":
     )
     print(50 * "=")
     print(user_intent_result)
-    print(50 * "=")
-    # ======================================================================= #
-    prompt_rewriter = PromptReWriterChain(llm=llm, retriever=retriever)
-    prompt_rewriter_result = prompt_rewriter.chain().invoke(
-        input={"question": "what are the total iron maiden artist sales?"}
-    )
-    print(50 * "=")
-    print(prompt_rewriter_result)
     print(50 * "=")
     # ======================================================================= #
     sql_chain = SQLChain(llm=llm, retriever=retriever)
