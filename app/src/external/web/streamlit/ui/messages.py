@@ -1,21 +1,22 @@
 from typing import Callable
+from uuid import uuid4
 
 import pandas as pd
 import streamlit as st
 from src.common.utils.database import get_database_connection
 from src.config import get_config
 from src.external.web.streamlit.ui.dynamic_dataframe_filters import (
-    dynamic_dataframe_filter,
+    dynamic_dataframe_filter_ui,
 )
 
 config = get_config()
 
 
-def format_user_message(message_content) -> None:
+def format_user_message(message_content, message_index) -> None:
     st.markdown(message_content)
 
 
-def format_assistant_message(message_content) -> None:
+def format_assistant_message(message_content, message_index) -> None:
     chart_spec = message_content["chart"]
 
     conn = get_database_connection()
@@ -30,11 +31,15 @@ def format_assistant_message(message_content) -> None:
         st.code(sql, language="sql")
 
     with tab_table:
-        dynamic_filters_table = dynamic_dataframe_filter(df, key="table")
+        dynamic_filters_table = dynamic_dataframe_filter_ui(
+            df, key=f"table_{message_index}"
+        )
         st.dataframe(dynamic_filters_table)
 
     with tab_chart:
-        dynamic_filters_table_chart = dynamic_dataframe_filter(df, key="chart")
+        dynamic_filters_table_chart = dynamic_dataframe_filter_ui(
+            df, key=f"chart_{message_index}"
+        )
         st.vega_lite_chart(dynamic_filters_table_chart, chart)
 
     with tab_text:
@@ -54,8 +59,8 @@ def message_formatter_factory(role: str) -> Callable:
 
 
 def render_messages() -> None:
-    for message in st.session_state.messages:
+    for index, message in enumerate(st.session_state.messages):
         role = message["role"]
         content = message["content"]
         with st.chat_message(role):
-            message_formatter_factory(role)(content)
+            message_formatter_factory(role)(content, index)
