@@ -1,5 +1,5 @@
 from textwrap import dedent
-from typing import List, Literal
+from typing import List, Literal, Union
 
 from langchain_core.pydantic_v1 import BaseModel, Field
 
@@ -23,7 +23,7 @@ class ExtractedQueryWhereClause(BaseModel):
     table_name: str = Field(..., description="Extracted table name")
     column_name: str = Field(..., description="Extracted column name")
     operator: str = Field(..., description="Extracted operator")
-    value: str = Field(..., description="Extracted value")
+    value: Union[str, List[str]] = Field(..., description="Extracted value")
 
 
 class ExtractedQueryWhereClauseList(BaseModel):
