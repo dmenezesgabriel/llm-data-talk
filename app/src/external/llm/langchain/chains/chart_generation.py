@@ -17,7 +17,7 @@ class ChartGenerationChain(BaseChain):
     def chain(self) -> LLMChain:
         prompt = PromptTemplate(
             template=CHART_GENERATION_TEMPLATE,
-            input_variables=["query", "question"],
+            input_variables=["schema", "question"],
         )
 
         return (

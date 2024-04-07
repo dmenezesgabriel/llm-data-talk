@@ -138,6 +138,62 @@ Json:
 """
 )
 
+NATURAL_LANGUAGE_ANALYSIS_GENERATION_TEMPLATE = dedent(
+    """
+Based in the python pandas dataframe schema below, write a natural language \
+string template that answer the user's question replacing the placeholders \
+with text interpolation by iterating over the dataframe.
+
+The function that will be used to iterate over the dataframe and interpolate \
+the text is the following:
+
+```py
+def interpolate_template(template: str, df) -> str:
+    placeholders = {{}}
+    for row_index, row in df.iterrows():
+        cols = df.columns
+        for col_index, col in enumerate(cols):
+            f"placeholder_row_{{row_index}}_col_{{col_index}}"
+            placeholders[f"placeholder_row_{{row_index}}_col_{{col_index}}"] = row[
+                col
+            ]
+    return template.format(**placeholders)
+```
+
+Example:
+
+question: Among the top artists by album sales, which is the first?
+
+schema:
+|              | 0      |
+|:-------------|:-------|
+| Artist       | object |
+| Album        | object |
+| Sales        | int64  |
+| Release Year | int64  |
+
+expected response:
+
+Among the top artists by album sales, the first is {{placeholder_row_0_col_0}}.
+Their best-selling album, {{placeholder_row_0_col_1}}, released in \
+{{placeholder_row_0_col_3}}, has achieved remarkable success worldwide.
+
+<question>
+{context}
+</question>
+
+<question>
+{question}
+</question>
+
+<dataframe-schema>
+{schema}
+</dataframe-schema>
+
+Expected response:
+"""
+)
+
 if __name__ == "__main__":
     print(20 * "=")
     print(USER_INTENT_EXTRACTION_TEMPLATE)

@@ -1,9 +1,9 @@
 from typing import Callable
-from uuid import uuid4
 
-import pandas as pd
+import pandas as pd  # type: ignore
 import streamlit as st
 from src.common.utils.database import get_database_connection
+from src.common.utils.dataframe import interpolate_template
 from src.config import get_config
 from src.external.web.streamlit.ui.dynamic_dataframe_filters import (
     dynamic_dataframe_filter_ui,
@@ -22,6 +22,7 @@ def format_assistant_message(message_content, message_index) -> None:
     conn = get_database_connection()
     chart = chart_spec["chart_spec"]
     sql = chart_spec["sql_query"]
+    template = chart_spec["text_response"]
     df = pd.read_sql_query(sql, conn)
 
     tab_titles = ["SQL", "Table", "Chart", "Text", "Steps"]
@@ -43,7 +44,7 @@ def format_assistant_message(message_content, message_index) -> None:
         st.vega_lite_chart(dynamic_filters_table_chart, chart)
 
     with tab_text:
-        st.write("Not Implemented")
+        st.markdown(interpolate_template(template, df))
 
     with tab_steps:
         with st.expander("spec"):

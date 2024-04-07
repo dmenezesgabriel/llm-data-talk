@@ -1,7 +1,7 @@
 import warnings
 from typing import Union
 
-import pandas as pd
+import pandas as pd  # type: ignore
 import streamlit as st
 from pandas.api.types import (
     is_datetime64_any_dtype,

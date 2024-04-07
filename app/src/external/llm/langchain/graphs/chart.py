@@ -5,15 +5,23 @@ from src.common.utils.dataframe import query_to_pandas_schema
 from src.external.llm.langchain.chains.chart_generation import (
     ChartGenerationChain,
 )
+from src.external.llm.langchain.chains.response_format_router import (
+    ResponseFormatRouteChain,
+)
 from src.external.llm.langchain.chains.sql_generation import SQLGenerationChain
+from src.external.llm.langchain.chains.text_analysis_generation import (
+    TextAnalysisGenerationChain,
+)
 from typing_extensions import TypedDict
 
 
 class ChartGraphState(TypedDict):
     question: str
+    response_format: str
     sql_query: str
     dataframe_schema: str
     chart_spec: Dict[str, Any]
+    text_response: str
 
 
 class ChartGraph:
@@ -23,8 +31,23 @@ class ChartGraph:
         self._conn = conn
         self.workflow = StateGraph(ChartGraphState)
 
+    def _choose_best_response_format(self, state):
+        question = state["question"]
+
+        response_format_chain = ResponseFormatRouteChain(llm=self._llm)
+        response_format = response_format_chain.chain().invoke(
+            input={
+                "question": question,
+            }
+        )
+        return {
+            "question": question,
+            "response_format": response_format.response_format,
+        }
+
     def _generate_sql(self, state):
         question = state["question"]
+        response_format = state["response_format"]
 
         sql_chain = SQLGenerationChain(
             llm=self._llm, retriever=self._retriever
@@ -33,20 +56,25 @@ class ChartGraph:
         return {
             "question": question,
             "sql_query": sql_query,
+            "response_format": response_format,
         }
 
     def _sql_to_pandas_schema(self, state):
         question = state["question"]
+        response_format = state["response_format"]
         sql_query = state["sql_query"]
+
         schema = query_to_pandas_schema(sql_query, self._conn)
         return {
             "question": question,
+            "response_format": response_format,
             "sql_query": sql_query,
             "dataframe_schema": schema,
         }
 
     def _generate_chart(self, state):
         question = state["question"]
+        response_format = state["response_format"]
         sql_query = state["sql_query"]
         dataframe_schema = state["dataframe_schema"]
 
@@ -56,22 +84,51 @@ class ChartGraph:
         )
         return {
             "question": question,
+            "response_format": response_format,
             "sql_query": sql_query,
             "dataframe_schema": dataframe_schema,
             "chart_spec": chart_spec,
         }
 
+    def _generate_text(self, state):
+        question = state["question"]
+        response_format = state["response_format"]
+        sql_query = state["sql_query"]
+        dataframe_schema = state["dataframe_schema"]
+        chart_spec = state["chart_spec"]
+
+        text_chain = TextAnalysisGenerationChain(
+            llm=self._llm, retriever=self._retriever
+        )
+        template = text_chain.chain().invoke(
+            input={"question": question, "schema": dataframe_schema}
+        )
+        return {
+            "question": question,
+            "response_format": response_format,
+            "sql_query": sql_query,
+            "dataframe_schema": dataframe_schema,
+            "chart_spec": chart_spec,
+            "text_response": template,
+        }
+
     def graph(self):
+        self.workflow.add_node(
+            "choose_best_response_format", self._choose_best_response_format
+        )
         self.workflow.add_node("generate_sql", self._generate_sql)
         self.workflow.add_node(
             "sql_to_pandas_schema", self._sql_to_pandas_schema
         )
         self.workflow.add_node("generate_chart", self._generate_chart)
+        self.workflow.add_node("generate_text", self._generate_text)
 
-        self.workflow.set_entry_point("generate_sql")
+        self.workflow.set_entry_point("choose_best_response_format")
+        self.workflow.add_edge("choose_best_response_format", "generate_sql")
         self.workflow.add_edge("generate_sql", "sql_to_pandas_schema")
         self.workflow.add_edge("sql_to_pandas_schema", "generate_chart")
-        self.workflow.add_edge("generate_chart", END)
+        self.workflow.add_edge("generate_chart", "generate_text")
+        self.workflow.add_edge("generate_text", END)
 
         return self.workflow.compile()
 
