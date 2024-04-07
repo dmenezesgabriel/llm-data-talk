@@ -18,12 +18,13 @@ class ResponseTypeRouteQuery(BaseModel):
     )
 
 
-class AnalyticsEngineeringTaskPlan(BaseModel):
-    question: str = Field(..., description="Business question to be answered")
-    final_response_format: Literal["chart", "text", "table"] = Field(
-        ..., description="Task response format"
-    )
+class ExtractedQueryWhereClause(BaseModel):
+    clause: str = Field(..., description="Extracted where clause")
+    table_name: str = Field(..., description="Extracted table name")
+    column_name: str = Field(..., description="Extracted column name")
+    operator: str = Field(..., description="Extracted operator")
+    value: str = Field(..., description="Extracted value")
 
 
-class AnalyticsEngineeringTaskPlanList(BaseModel):
-    tasks: List[AnalyticsEngineeringTaskPlan]
+class ExtractedQueryWhereClauseList(BaseModel):
+    where_clauses: List[ExtractedQueryWhereClause]

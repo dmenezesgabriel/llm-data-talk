@@ -6,6 +6,8 @@ from src.common.interfaces.llm_repository import LLMRepositoryInterface
 from src.external.llm.langchain.chains.sql_generation import SQLGenerationChain
 from src.external.llm.langchain.graphs.chart import ChartGraph
 
+# TODO https://python.langchain.com/docs/modules/model_io/chat/token_usage_tracking/
+
 
 class OpenAiRepository(LLMRepositoryInterface):
     def __init__(self, api_key: str) -> None:

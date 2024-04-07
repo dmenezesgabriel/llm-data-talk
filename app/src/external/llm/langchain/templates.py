@@ -69,31 +69,53 @@ SQL Query:
 """
 )
 
-SQL_ENTITY_EXTRACTION_TEMPLATE = dedent(
+SYSTEM_QUERY_CLAUSE_EXTRACTOR_TEMPLATE = dedent(
     """
-You need to extract entities from the user query `WHERE` and `HAVING` \
-clauses in specified format.
-Extracted entities always should have valid json format, if you don't \
-find any entities then respond with empty list.
+You are an data engineer specialist and need to extract the where \
+clauses and each statement from the clause in user query then return \
+them as a valid JSON format.
+You must keep the order of the where clauses and statements.
+First Clause will always be "WHERE" clause.
 
-Entity Format: List of dict, where each dict having format as:
+expected response format:
+[
+    {{
+        "clause":"{{clause}}",
+        "table_name: "{{table_name}}",
+        "column_name": "{{column_name}}",
+        "operator":"{{operator}}",
+        "value":"{{value}}"
+    }},
+    {{
+        "clause":"{{clause}}",
+        "table_name: "{{table_name}}",
+        "column_name": "{{column_name}}",
+        "operator":"{{operator}}",
+        "value": ["{{value}}", "{{value}}"]
+    }}
+]
 
-{{
-    "entity":"{{entity key}}",
-    "attribute":"{{entity attribute key}}",
-    "operator":"{{valid sql operator}}",
-    "value":"{{value of entity}}"
-}}
+Examples:
+[
+    {{
+        "clause":"WHERE",
+        "table_name": "TBL_ARTISTS",
+        "column_name": "name",
+        "operator":"=",
+        "value":"Iron Maiden"
+    }},
+    {{
+        "clause": "AND",
+        "table_name": "TBL_BANDS",
+        "column_name": "genre",
+        "operator": "IN",
+        "value": ["Grunge", "Heavy Metal"]
+    }}
+[
 
-<sql-query>
+<query>
 {query}
-</sql-query>
-
-<question>
-{question}
-</question>
-
-Entities:
+</query>
 """
 )
 
@@ -122,6 +144,6 @@ if __name__ == "__main__":
     print(20 * "=")
     print(SQL_GENERATION_TEMPLATE)
     print(20 * "=")
-    print(SQL_ENTITY_EXTRACTION_TEMPLATE)
+    print(SYSTEM_QUERY_CLAUSE_EXTRACTOR_TEMPLATE)
     print(20 * "=")
     print(CHART_GENERATION_TEMPLATE)
