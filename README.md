@@ -1,6 +1,6 @@
 # LLM Data Talk
 
-[streamlit-main-2024-03-15-00-03-95.webm](https://github.com/dmenezesgabriel/llm-data-talk/assets/50274255/ff25ba04-42f4-4fdc-858d-ef074125139f)
+[output.webm](https://github.com/dmenezesgabriel/llm-data-talk/assets/50274255/e5410ca5-4bfa-4c44-a75e-0ea43bfd2865)
 
 ## How it works
 
