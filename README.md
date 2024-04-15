@@ -62,6 +62,10 @@ PYTHONDONTWRITEBYTECODE=1 python -m src.external.llm.langchain.chains.graph
 
 ![clean-architecture](docs/assets/clean_architecture.jpg)
 
+### Repositories
+
+- [terraform-aws-data-lake](https://github.com/dmenezesgabriel/terraform-aws-data-lake)
+
 ## Resources
 
 - [chat2plot](https://github.com/nyanp/chat2plot)
